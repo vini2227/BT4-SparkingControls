@@ -120,7 +120,7 @@ sealed class PeImage {
 public sealed class OnlineDataPointer {public int offset;public string symbol,literal;}
 public sealed class OnlineReference { public int[] code_offsets;public int local_index,local_count,data_origin_addend;public OnlineDataPointer[] pointers;public int data_length;public string data_mask,data_bytes;public int offset,width,addend,bias; public string symbol,kind,data_expected,symbol_scope; }
 public sealed class OnlineSignature { public string name,expected,mask; public int length; public OnlineReference[] references; }
-public sealed class PacketContract { public string entry,entry_call_symbol,packet;public int entry_call_offset,return_offset;public OnlineSignature caller; }
+public sealed class PacketContract { public int format;public string epilogue,binding;public string entry,entry_call_symbol,packet;public int entry_call_offset,return_offset;public OnlineSignature caller; }
 public sealed class OnlineMetadata {
     public PacketContract packet_contract;
     public int format,entry_offset,trampoline_length,online_addend;
@@ -212,6 +212,7 @@ static class OnlineCompatibility {
     // Bound this fallback to a reviewed Windows ABI and exact packet-producing block,
     // including the shared epilogue, and require the unchanged net sampling caller.
     static void CheckPacketContract(PeImage image,PacketContract c) {
+        if(c.format==4){Bt4PacketBoundary.Check(image,c);return;}
         int rva=image.Symbol("Port_PadRead"),length=image.FunctionLength("Port_PadRead");
         if(length<256||length>32768||c.entry_call_offset!=0x5b||c.return_offset!=0x6a||c.caller==null||c.caller.name!="sample_local")throw Changed("input contract metadata");
         byte[] actual=image.Read(rva,length),entry=Program.Unhex(c.entry),packet=Program.Unhex(c.packet);
@@ -229,7 +230,7 @@ static class OnlineCompatibility {
     }
     public static string ResolveImage(PeImage image,Profile profile,OnlineMetadata metadata,string resourceRoot=null){
         byte[] template=File.ReadAllBytes(Path.Combine(resourceRoot??Program.Root,"SparkingControls.payload"));
-        if(metadata.format!=2||metadata.payload_sha256!=profile.payload_sha256||PeImage.Digest(template)!=metadata.payload_sha256||metadata.functions==null||metadata.functions.Length<50||metadata.game_references==null||(resourceRoot==null?metadata.game_references.Length!=28:metadata.game_references.Length<24||metadata.game_references.Length>64)||metadata.entry_offset<0x1000||metadata.entry_offset>=0xe000||metadata.trampoline_length!=6||image.ImageBase!=profile.image_base)throw Changed("compatibility metadata");
+        if(metadata.format!=2||metadata.payload_sha256!=profile.payload_sha256||PeImage.Digest(template)!=metadata.payload_sha256||metadata.functions==null||metadata.functions.Length<50||metadata.game_references==null||(resourceRoot==null?metadata.game_references.Length!=32:metadata.game_references.Length<24||metadata.game_references.Length>64)||metadata.entry_offset<0x1000||metadata.entry_offset>=0xe000||metadata.trampoline_length!=6||image.ImageBase!=profile.image_base)throw Changed("compatibility metadata");
         var report=new StringBuilder();report.AppendLine("Automatic resolution: COFF symbols, native interface signatures, bounded input/state ABI contracts and symbolic reference targets.");report.AppendLine("Game SHA256: "+image.Sha256);
         // Preserve exact historical executables accepted by the previous release.
         // A full-file cryptographic match is required here. Unknown hashes still
@@ -284,7 +285,7 @@ static class OnlineCompatibilityTests {
                 if(reference.width==4)Buffer.BlockCopy(BitConverter.GetBytes(checked(BitConverter.ToInt32(moved,off)+delta)),0,moved,off,4);
                 else Buffer.BlockCopy(BitConverter.GetBytes(BitConverter.ToInt64(moved,off)+delta),0,moved,off,8);
             }
-            foreach(var f in metadata.functions)foreach(var reference in f.references)if(reference.pointers!=null||reference.code_offsets!=null){
+            foreach(var f in metadata.functions.Where(f=>f.name!="Port_PadRead"))foreach(var reference in f.references)if(reference.pointers!=null||reference.code_offsets!=null){
                 byte[] original=image.Read(image.Symbol(f.name),f.length);long v=NumberForTest(original,reference.offset,reference.width);long target=reference.kind=="relative"?image.Symbol(f.name)+reference.offset+reference.bias+v:v-image.ImageBase;
                 if(reference.code_offsets!=null)for(int k=0;k<reference.code_offsets.Length;k++){int off=image.RawOffset((int)target+k*8,8);Buffer.BlockCopy(BitConverter.GetBytes(BitConverter.ToInt64(bytes,off)+delta),0,moved,off,8);}
                 foreach(var pointer in reference.pointers??new OnlineDataPointer[0]){int off=image.RawOffset((int)target-reference.data_origin_addend+pointer.offset,8);Buffer.BlockCopy(BitConverter.GetBytes(BitConverter.ToInt64(bytes,off)+delta),0,moved,off,8);}
@@ -298,11 +299,11 @@ static class OnlineCompatibilityTests {
                 Assert(allocation+tail+5+BitConverter.ToInt32(relocated,tail+1)==image.ImageBase+shifted.patches[0].rva+metadata.trampoline_length,"trampoline after both relocations");
                 foreach(var reference in metadata.game_references)Assert(BitConverter.ToInt32(relocated,reference.offset)==image.ImageBase+new PeImage(moved).Symbol(reference.symbol)+reference.addend,"external reference unaffected by allocation");
             }
-            log.AppendLine("PASS: moved executable sections rebuild hook, trampoline, 24 payload targets and HUD at three allocation addresses.");
+            log.AppendLine("PASS: moved executable sections rebuild hook, trampoline, payload targets and HUD at three allocation addresses.");
             foreach(string name in new[]{"Port_PadRead","BtlInput_BuildCommands","BtlAct_CanFuse","Port_NetActive"}){
                 var bad=(byte[])bytes.Clone();bad[image.RawOffset(image.Symbol(name),1)]^=1;bool refused=false;try{OnlineCompatibility.ResolveImage(new PeImage(bad),Program.LoadProfile(),metadata);}catch(IOException){refused=true;}Assert(refused,"changed instructions "+name);
             }
-            if(metadata.packet_contract!=null && image.FunctionLength("Port_PadRead")!=metadata.functions.First(f=>f.name=="Port_PadRead").length){
+            if(metadata.packet_contract!=null && metadata.packet_contract.format!=4 && image.FunctionLength("Port_PadRead")!=metadata.functions.First(f=>f.name=="Port_PadRead").length){
                 var padded=(byte[])bytes.Clone();int padEnd=image.RawOffset(image.Symbol("Port_PadRead")+image.FunctionLength("Port_PadRead")-1,1);
                 Assert(padded[padEnd]==0x90,"fixture trailing alignment NOP");padded[padEnd]=0xcc;
                 OnlineCompatibility.ResolveImage(new PeImage(padded),Program.LoadProfile(),metadata);
@@ -333,3 +334,67 @@ static class OnlineCompatibilityTests {
 }
 
 
+
+
+// Bounded symbolic decoder for the native 18-byte packet writer. Never executes
+// game code, never scans process memory, and runs only during launch resolution.
+static class Bt4PacketBoundary {
+ static void Require(bool ok,string detail){if(!ok)throw new IOException("Changed native interface: BT4 input boundary "+detail);}
+ static int Find(byte[] code,byte[] pattern,int begin,int limit){int found=-1;for(int i=begin;i+pattern.Length<=Math.Min(limit,code.Length);i++){bool equal=true;for(int k=0;k<pattern.Length;k++)if(code[i+k]!=pattern[k]){equal=false;break;}if(equal){if(found>=0)return -2;found=i;}}return found;}
+ public static void Check(PeImage image,PacketContract c){
+  int rva=image.Symbol("Port_PadRead"),length=image.FunctionLength("Port_PadRead");
+  Require(length>=256&&length<=32768&&c.caller!=null&&c.caller.name=="sample_local","bounds/caller");
+  byte[] code=image.Read(rva,length),entry=Program.Unhex(c.entry),epilogue=Program.Unhex(c.epilogue),binding=Program.Unhex(c.binding);
+  Require(entry.Length==53&&epilogue.Length==54&&binding.Length==5,"metadata");
+  Require(code.Take(entry.Length).SequenceEqual(entry),"Win64 register/stack save");
+  Require(Find(code,binding,entry.Length,128)>=0,"socket/output arguments");
+  int exit=Find(code,epilogue,entry.Length,256);Require(exit>=0,"Win64 register/stack restore");
+  var exits=new HashSet<int>();
+  for(int i=entry.Length;i<code.Length-5;i++)if(code[i]==0xb8&&code[i+1]==18&&code[i+2]==0&&code[i+3]==0&&code[i+4]==0)
+   for(int begin=Math.Max(entry.Length,i-160);begin<=i;begin++){var decoder=new Writer(code,begin,Math.Min(code.Length,i+128),exit);int finish=decoder.Run();if(finish>=0)exits.Add(finish);}
+  Require(exits.Count==1,"18-byte writer/return (buttons, four axes, zero padding)");
+  OnlineCompatibility.CheckSignature(image,c.caller);
+ }
+ sealed class Writer {
+  readonly byte[] b;readonly int limit,exit;int at;bool bad;
+  readonly string[] registers=new string[16],output=new string[18];
+  public Writer(byte[] bytes,int begin,int end,int epilogue){b=bytes;at=begin;limit=end;exit=epilogue;for(int i=0;i<16;i++)registers[i]="r"+i;registers[4]="stack";registers[6]="packet";}
+  int Byte(){if(at>=limit){bad=true;return 0;}return b[at++];}
+  int Int(){if(at>limit-4){bad=true;return 0;}int value=BitConverter.ToInt32(b,at);at+=4;return value;}
+  void Assign(int reg,string value){if(reg==4||reg==6){bad=true;return;}registers[reg]=value;}
+  bool Memory(int mod,int rm,int rex,out int address,out bool stack){
+   address=0;stack=false;if(mod==3)return false;
+   int basis=rm+((rex&1)!=0?8:0);
+   if(rm==4){int sib=Byte();if(sib!=0x24||(rex&3)!=0)return false;basis=4;}
+   if(mod==0&&rm==5)return false;
+   if(mod==1)address=(sbyte)Byte();else if(mod==2)address=Int();
+   if(basis!=4&&basis!=6)return false;stack=basis==4;return !bad;
+  }
+  void Store(int offset,int width,string value){
+   if(offset<0||offset>18-width){bad=true;return;}
+   if(value=="0"){for(int i=0;i<width;i++)output[offset+i]="0";return;}
+   if(width==2&&value.StartsWith("~r",StringComparison.Ordinal)){output[offset]="lo:"+value;output[offset+1]="hi:"+value;return;}
+   if(width==1&&value.Length==2&&value[0]=='a'){output[offset]=value;return;}
+   bad=true;
+  }
+  bool Complete(){return registers[0]=="18"&&output[0]!=null&&output[0].StartsWith("lo:~r",StringComparison.Ordinal)&&output[1]=="hi:"+output[0].Substring(3)&&output[2]=="a0"&&output[3]=="a1"&&output[4]=="a2"&&output[5]=="a3"&&output.Skip(6).All(x=>x=="0");}
+  public int Run(){
+   for(int count=0;count<64&&!bad&&at<limit;count++){
+    bool word=false;int rex=0,op=Byte();if(op==0x66){word=true;op=Byte();}if(op>=0x40&&op<=0x4f){rex=op&15;op=Byte();}
+    int width=word?2:(rex&8)!=0?8:4;
+    if(op==0xe9){int displacement=Int();return !bad&&at+displacement==exit&&Complete()?at-5:-1;}
+    if(op>=0xb8&&op<=0xbf){if(width!=4)return -1;int value=Int();Assign(op-0xb8+((rex&1)!=0?8:0),value.ToString(System.Globalization.CultureInfo.InvariantCulture));continue;}
+    if(op==0x0f){if(Byte()!=0xb6||word||(rex&8)!=0)return -1;int field=Byte(),address;bool stack;int reg=((field>>3)&7)+((rex&4)!=0?8:0);if(!Memory(field>>6,field&7,rex,out address,out stack)||!stack||address<0x94||address>0x97)return -1;Assign(reg,"a"+(address-0x94));continue;}
+    if(op!=0x89&&op!=0x88&&op!=0x31&&op!=0xf7&&op!=0xc7)return -1;
+    int modrm=Byte(),mod=modrm>>6,regId=((modrm>>3)&7)+((rex&4)!=0?8:0),rm=modrm&7,dest=rm+((rex&1)!=0?8:0);
+    if(op==0x31){if(mod!=3||regId!=dest)return -1;Assign(dest,"0");continue;}
+    if(op==0xf7){if(mod!=3||((modrm>>3)&7)!=2||width!=4)return -1;string value=registers[dest];if(!value.StartsWith("r",StringComparison.Ordinal))return -1;Assign(dest,"~"+value);continue;}
+    if(mod==3){if(op!=0x89||width!=4)return -1;Assign(dest,registers[regId]);continue;}
+    int offset;bool isStack;if(!Memory(mod,rm,rex,out offset,out isStack)||isStack)return -1;
+    if(op==0xc7){if(((modrm>>3)&7)!=0||word)return -1;int value=Int();if(value!=0)return -1;Store(offset,width,"0");continue;}
+    if(op==0x88){if(rex==0&&regId>=4)return -1;Store(offset,1,registers[regId]);}else Store(offset,width,registers[regId]);
+   }
+   return -1;
+  }
+ }
+}

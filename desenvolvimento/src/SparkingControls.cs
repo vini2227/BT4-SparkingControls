@@ -132,8 +132,9 @@ sealed class TechniquePrompt {
     public RectangleF Project(Size size) {
         float aspect=AspectMilli>=1000 && AspectMilli<=5000?AspectMilli/1000f:(float)size.Width/Math.Max(1,size.Height);
         float w=Math.Min(size.Width,size.Height*aspect),h=w/aspect,left=(size.Width-w)/2,top=(size.Height-h)/2;
-        // BT4 native Original HUD bypasses horizontal narrowing (gs_draw.c bt4OriginalHud).
-        float narrow=Layout==0?1:aspect>1.34f?1.3333333f/aspect:1;
+        // BT4 prompt geometry stays on its native page in Original and Centered HUD.
+        // Centering it again moves the glyph away from the native Triangle.
+        float narrow=Layout==1&&aspect>1.34f?1.3333333f/aspect:1;
         float pivot=Layout==2?256:Side==0?0:512;
         float x=pivot+(NativeBounds.X-pivot)*narrow;
         return new RectangleF(left+x*w/512,top+NativeBounds.Y*h/448,NativeBounds.Width*narrow*w/512,NativeBounds.Height*h/448);

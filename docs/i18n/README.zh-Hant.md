@@ -2,11 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.6 Test
+# BT4 Sparking Controls — 0.9 Test
 
-解壓縮 Windows ZIP，執行 BT4-SparkingControls.exe。選擇 BT4decomp.exe 或同一資料夾中的 .cmd，然後儲存並啟動。0.6 Test 包含字型、CMD 啟動、對波輸入與頭像修正。設定會保留。僅提供 Windows 版本。
+0.9 更新：自適應相容 R7.1 Hotfix，僅在啟動時分析；倒地後手動起身只用圓圈（圓圈加方向可定向起身，站立時 R1 仍可防禦，自動起身保留）；修正置中 HUD 的方塊覆蓋位置。包含所有先前改進。
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.6-test/BT4-SparkingControls-0.6-Test-Windows.zip) · [0.6 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+解壓縮 Windows ZIP，執行 BT4-SparkingControls.exe。選擇 BT4decomp.exe 或同一資料夾中的 .cmd，然後儲存並啟動。0.9 Test 包含字型、CMD 啟動、對波輸入與頭像修正。設定會保留。僅提供 Windows 版本。
+
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## 操作
 

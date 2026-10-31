@@ -2,11 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.6 Test
+# BT4 Sparking Controls — 0.9 Test
 
-Extrayez le ZIP Windows et lancez BT4-SparkingControls.exe. Sélectionnez BT4decomp.exe ou un fichier .cmd placé dans le même dossier, puis enregistrez et démarrez. La version 0.6 Test inclut les corrections des polices, du lancement CMD, des duels et des portraits. Les réglages sont conservés. Windows uniquement.
+Nouveautés 0.9 : compatibilité adaptative R7.1 Hotfix, analyse au démarrage uniquement, relevage manuel au sol avec Cercle uniquement (Cercle + direction pour choisir la direction ; R1 garde debout et le relevage automatique est conservé), alignement du carré sur le triangle dans le HUD centré. Toutes les améliorations précédentes sont incluses.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.6-test/BT4-SparkingControls-0.6-Test-Windows.zip) · [0.6 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+Extrayez le ZIP Windows et lancez BT4-SparkingControls.exe. Sélectionnez BT4decomp.exe ou un fichier .cmd placé dans le même dossier, puis enregistrez et démarrez. La version 0.9 Test inclut les corrections des polices, du lancement CMD, des duels et des portraits. Les réglages sont conservés. Windows uniquement.
+
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## Commandes
 

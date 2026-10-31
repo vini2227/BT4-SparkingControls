@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-or-later
+﻿/* SPDX-License-Identifier: AGPL-3.0-or-later
    Only Port_PadRead is hooked. This translates the local 18-byte pad packet BEFORE net.c sample_local stores it.
    Battle decision/command builders, remote input and rollback re-simulation execute the original game code. */
 typedef unsigned char u8;typedef unsigned short u16;typedef unsigned int u32;
@@ -84,6 +84,24 @@ __declspec(dllexport) int PadFilter(int socket,u8 *data){
     int action=I32(chr,0x948);
     /* Native beam struggle inputs must bypass super-hold aliases entirely. */
     if(action>=0x130&&action<=0x132){ui_hidden();return result;}
+    /* Native down/get-up checks accept ANY_FACE or a direction. R1 maps to
+       native Circle/guard, so allowing its ordinary mapping also gets up.
+       Only physical Circle may request a manual get-up in these down actions.
+       Circle + direction retains native directional recovery. Automatic native
+       recovery timing, action decisions and remote/CPU input remain untouched. */
+    if(action==0xd8||(action>=0xda&&action<=0xde)){
+        /* Clear only this human port's pending shortcuts and card state. */
+        U32((void *)MAIL,0x10c+side*128)=0;
+        for(int i=0;i<16;i++){U32((void *)MAIL,0x600+side*64+i*4)=0;U32((void *)MAIL,0x840+side*64+i*4)=0;}
+        for(int i=0;i<8;i++){U32((void *)MAIL,0x700+side*32+i*4)=0;U32((void *)MAIL,0x780+side*32+i*4)=0;U32((void *)MAIL,0x7c0+side*32+i*4)=0;U32((void *)MAIL,0x800+side*32+i*4)=0;U32((void *)MAIL,0x8c0+side*32+i*4)=0;}
+        for(int i=0;i<4;i++)U32((void *)MAIL,0x500+side*16+i*4)=0;
+        unsigned recovery=raw&9u;
+        if(raw&0x2000u)recovery|=0x2000u|directions(raw,data);
+        else neutral_stick(data);
+        data[2]=data[3]=128;
+        data[0]=(u8)~recovery;data[1]=(u8)~(recovery>>8);
+        return result;
+    }
     int active=action>=0x106&&action<=0x13b;int skill=action>=0xfd&&action<=0x102;
     int combo=(action>=0x44&&action<=0x66)||(action>=0x70&&action<=0xad);
     int stickUp=data[5]<78,stickDown=data[5]>178;

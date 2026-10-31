@@ -2,11 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.6 Test
+# BT4 Sparking Controls — 0.9 Test
 
-فك ضغط ملف Windows وشغّل BT4-SparkingControls.exe. اختر BT4decomp.exe أو ملف .cmd في المجلد نفسه ثم احفظ وابدأ. يتضمن الإصدار 0.6 Test إصلاحات الخطوط وتشغيل CMD وصدامات الطاقة والصور. تُحفظ الإعدادات. هذه الحزمة لنظام Windows فقط.
+الجديد في 0.9: توافق تكيفي مع R7.1 Hotfix وفحص عند بدء التشغيل فقط، والنهوض اليدوي من الأرض بزر الدائرة فقط (الدائرة مع اتجاه للنهوض الاتجاهي؛ يبقى R1 للدفاع أثناء الوقوف والنهوض التلقائي دون تغيير)، وتصحيح موضع المربع فوق المثلث في الواجهة الوسطية. جميع التحسينات السابقة متضمنة.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.6-test/BT4-SparkingControls-0.6-Test-Windows.zip) · [0.6 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+فك ضغط ملف Windows وشغّل BT4-SparkingControls.exe. اختر BT4decomp.exe أو ملف .cmd في المجلد نفسه ثم احفظ وابدأ. يتضمن الإصدار 0.9 Test إصلاحات الخطوط وتشغيل CMD وصدامات الطاقة والصور. تُحفظ الإعدادات. هذه الحزمة لنظام Windows فقط.
+
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## التحكم
 

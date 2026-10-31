@@ -2,11 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.6 Test
+# BT4 Sparking Controls — 0.9 Test
 
-Ekstrak ZIP Windows dan jalankan BT4-SparkingControls.exe. Pilih BT4decomp.exe atau berkas .cmd dalam folder yang sama, lalu simpan dan mulai. Versi 0.6 Test mencakup perbaikan font, peluncuran CMD, benturan energi, dan potret. Pengaturan tetap tersimpan. Khusus Windows.
+Baru di 0.9: kompatibilitas adaptif R7.1 Hotfix, analisis hanya saat mulai, bangkit manual dari tanah hanya dengan Circle (Circle + arah; R1 tetap bertahan saat berdiri dan pemulihan otomatis tetap ada), posisi Square tepat di atas Triangle pada HUD tengah. Semua peningkatan sebelumnya disertakan.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.6-test/BT4-SparkingControls-0.6-Test-Windows.zip) · [0.6 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+Ekstrak ZIP Windows dan jalankan BT4-SparkingControls.exe. Pilih BT4decomp.exe atau berkas .cmd dalam folder yang sama, lalu simpan dan mulai. Versi 0.9 Test mencakup perbaikan font, peluncuran CMD, benturan energi, dan potret. Pengaturan tetap tersimpan. Khusus Windows.
+
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## Kontrol
 

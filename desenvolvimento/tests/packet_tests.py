@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 import sys,json,struct,hashlib,random
 
 import pefile
@@ -113,6 +113,39 @@ def run_suite(allocated):
     got=invoke(raw,net=net,side=side,socket=port,active=1,story=0,flags=0,action=action,lx=23,ly=240)
     assert got==packet,('beam clash altered',net,side,action,hex(raw));checks+=1
  invoke(0,net=1,side=0,active=1,action=0,story=0,flags=0,injected=0)
+ # Ground get-up: only physical Circle reaches any native face/direction input.
+ for net,side,port in [(1,0,0),(1,1,0),(0,0,0),(0,1,1)]:
+  invoke(0,net=net,side=side,socket=port,active=1,injected=0,story=0,flags=0,action=0)
+  for down in [0xd8,0xda,0xdb,0xdc,0xdd,0xde]:
+   for raw in [0,0x800,0x8000,0x1000,0x4000,4,0x400,0x100,0x200,0xf0,0x8800,0xdfff,0x2000,0x2800,0xa000,0x2010,0x2080,0xffff]:
+    for lx,ly in [(128,128),(0,128),(255,128),(128,0),(128,255)]:
+     got=invoke(raw,net=net,side=side,socket=port,active=1,action=down,lx=lx,ly=ly)
+     expected=raw&9
+     if raw&0x2000:
+      dirs=raw&0xf0
+      if lx<78:dirs|=0x80
+      elif lx>178:dirs|=0x20
+      if ly<78:dirs|=0x10
+      elif ly>178:dirs|=0x40
+      expected|=0x2000|dirs
+      assert got[4:6]==bytes([lx,ly])
+     else:assert got[4:6]==bytes([128,128]),(net,side,down,hex(raw),got.hex())
+     assert held(got)==expected and got[2:4]==bytes([128,128]),('down recovery',down,hex(raw),got.hex());checks+=2
+   # A downed local port cannot clear the other player's active menu/state.
+   other=1-side;sentinels=[allocated+0xf100+other*128+12,allocated+0xf500+other*16,allocated+0xf600+other*64,allocated+0xf700+other*32,allocated+0xf780+other*32,allocated+0xf7c0+other*32,allocated+0xf800+other*32,allocated+0xf840+other*64,allocated+0xf8c0+other*32]
+   for address in sentinels:set32(address,0x1234abcd)
+   invoke(0x800,net=net,side=side,socket=port,action=down)
+   for address in sentinels:assert struct.unpack('<I',u.mem_read(address,4))[0]==0x1234abcd;set32(address,0);checks+=1
+   # Held guard and grab/fusion pulses must not leak across a knockdown.
+   invoke(0x8800,net=net,side=side,socket=port,action=0)
+   assert held(invoke(0x800,socket=port,action=down))==0;checks+=1
+   assert held(invoke(0x2000,socket=port))==0x2000;checks+=1
+   assert held(invoke(0x800,socket=port,action=0x38))==0x2000;checks+=1
+  assert invoke(0x800,lx=0,ly=255,net=net,side=side,socket=port,active=0,injected=0,action=0xd8)==packet;checks+=1
+  assert invoke(0x800,lx=0,ly=255,net=net,side=side,socket=port,active=1,injected=1,action=0xd8)==packet;checks+=1
+  if net:assert invoke(0x800,lx=0,ly=255,net=net,side=side,socket=1,active=1,injected=0,action=0xd8)==packet;checks+=1
+ invoke(0,net=1,side=0,socket=0,active=1,injected=0,action=0)
+ if '--recovery-only' in sys.argv:return 'PASS recovery allocation '+hex(allocated)
  # Pending story event owns physical R3; online and normal fights must not leak it.
  for cue in [0,1,2]:
   assert held(invoke(4,net=0,side=0,active=0,story=1,storyState=3,cue=cue,emergency=1))==4;checks+=1
@@ -819,7 +852,14 @@ def run_suite(allocated):
  finally:allow_native[0]=False
  return 'PASS allocation '+hex(allocated)
 
-lines=[run_suite(a) for a in [0x60000000,0x60100000,0x7e000000]]
-lines+=['PASS: '+str(checks)+' packet/ABI/native-command checks; new controls offline on both ports; menus preserved; online local side only, relocation, held techniques/skills, transform packets, switch panel and native teammate navigation/acknowledgment, cancellation and timeout, native swap acknowledgment/release and bounded retries online and on both offline ports, fusion tabs and native long-hold packets on host/guest and both offline ports, native R1+Square priority without attack/guard/counter leaks, R3 emergency shortcut in native eligibility window and no original R3 leakage, native boost chord, vertical Z Dash and disabled legacy double taps, guard return after Circle release with actual native counter animation/exit tests and varied hold durations/delayed input acknowledgment, no writes to fighter or game globals.','NOT TESTED: a live online match, actual ping/rollback behavior, physical-controller timing or opponent compatibility end-to-end.']
+lines=[]
+for allocation in [0x60000000,0x60100000,0x7e000000]:
+ result=run_suite(allocation);lines.append(result);print(result,flush=True)
+if '--recovery-only' in sys.argv:
+ lines.append('PASS: '+str(checks)+' focused packet/ABI recovery checks.')
+ (R/'analysis/recovery-test-results.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+ raise SystemExit(0)
+lines+=['PASS: '+str(checks)+' packet/ABI/native-command checks; new controls offline on both ports; menus preserved; online local side only, relocation, held techniques/skills, transform packets, switch panel and native teammate navigation/acknowledgment, cancellation and timeout, native swap acknowledgment/release and bounded retries online and on both offline ports, fusion tabs and native long-hold packets on host/guest and both offline ports, native R1+Square priority without attack/guard/counter leaks, R3 emergency shortcut in native eligibility window and no original R3 leakage, native boost chord, vertical Z Dash and disabled legacy double taps, Circle-only manual ground get-up and native automatic recovery untouched; guard return after Circle release with actual native counter animation/exit tests and varied hold durations/delayed input acknowledgment, no writes to fighter or game globals.','NOT TESTED: a live online match, actual ping/rollback behavior, physical-controller timing or opponent compatibility end-to-end.']
 print('\n'.join(lines));(R/'analysis/packet-test-results.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+
 

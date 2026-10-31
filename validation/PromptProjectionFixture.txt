@@ -1,0 +1,1 @@
+PASS: 33 prompt placement/scale checks; Original and Centered, four aspects, both sides. Captured 1920x1080 bound={X=180,Y=925,6661,Width=90,Height=77,13322} glyph={X=193,75,Y=953,7875,Width=47,5,Height=28,12149}. No per-frame pixel search.

@@ -2,11 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.6 Test
+# BT4 Sparking Controls — 0.9 Test
 
-Windows ZIP을 풀고 BT4-SparkingControls.exe를 실행하세요. BT4decomp.exe 또는 같은 폴더의 .cmd를 선택한 후 저장하고 시작하세요. 0.6 Test에는 글꼴, CMD 실행, 에너지 충돌 입력, 초상화 수정이 포함됩니다. 설정은 유지됩니다. Windows 전용입니다.
+0.9 변경: R7.1 Hotfix 적응형 호환성 검사, 시작할 때만 분석합니다. 지상 다운 상태의 수동 기상은 동그라미만 사용합니다(동그라미+방향 가능, 서 있을 때 R1 방어와 자동 기상 유지). 중앙 HUD의 네모/세모 겹침 위치를 수정했습니다. 이전 개선 사항도 모두 포함됩니다.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.6-test/BT4-SparkingControls-0.6-Test-Windows.zip) · [0.6 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+Windows ZIP을 풀고 BT4-SparkingControls.exe를 실행하세요. BT4decomp.exe 또는 같은 폴더의 .cmd를 선택한 후 저장하고 시작하세요. 0.9 Test에는 글꼴, CMD 실행, 에너지 충돌 입력, 초상화 수정이 포함됩니다. 설정은 유지됩니다. Windows 전용입니다.
+
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## 조작
 

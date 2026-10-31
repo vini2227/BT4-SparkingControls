@@ -2,11 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.6 Test
+# BT4 Sparking Controls — 0.9 Test
 
-แตกไฟล์ ZIP สำหรับ Windows แล้วเปิด BT4-SparkingControls.exe เลือก BT4decomp.exe หรือไฟล์ .cmd ในโฟลเดอร์เดียวกัน จากนั้นบันทึกและเริ่มเกม รุ่น 0.6 Test แก้ไขแบบอักษร การเปิดผ่าน CMD การปะทะพลัง และภาพตัวละคร การตั้งค่ายังคงอยู่ รองรับ Windows เท่านั้น
+ใหม่ใน 0.9: ความเข้ากันได้แบบปรับตัวสำหรับ R7.1 Hotfix วิเคราะห์เฉพาะตอนเริ่มเกม การลุกจากพื้นด้วยตนเองใช้วงกลมเท่านั้น (วงกลมพร้อมทิศทางได้ R1 ยังป้องกันเมื่อยืน และยังลุกอัตโนมัติตามเดิม) แก้ตำแหน่งสี่เหลี่ยมให้ทับสามเหลี่ยมใน HUD แบบกึ่งกลาง รวมการปรับปรุงก่อนหน้าทั้งหมด
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.6-test/BT4-SparkingControls-0.6-Test-Windows.zip) · [0.6 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+แตกไฟล์ ZIP สำหรับ Windows แล้วเปิด BT4-SparkingControls.exe เลือก BT4decomp.exe หรือไฟล์ .cmd ในโฟลเดอร์เดียวกัน จากนั้นบันทึกและเริ่มเกม รุ่น 0.9 Test แก้ไขแบบอักษร การเปิดผ่าน CMD การปะทะพลัง และภาพตัวละคร การตั้งค่ายังคงอยู่ รองรับ Windows เท่านั้น
+
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## การควบคุม
 
