@@ -1,0 +1,1 @@
+PASS: language/game path migrated, shared settings preserved across changed version folders, previous-version fallback and reopening verified in isolated fixture.

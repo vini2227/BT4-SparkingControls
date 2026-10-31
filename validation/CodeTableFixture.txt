@@ -1,0 +1,1 @@
+PASS: 568 previous/current image and independently corrupted jump-table target checks.

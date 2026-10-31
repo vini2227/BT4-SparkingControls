@@ -1,0 +1,4 @@
+Old file loading: Fira Sans Condensed regular=True bold=True
+Legacy regular constructor succeeded in this run.
+Selected Fira Sans Condensed style=Regular regular=True
+PASS: game Fira font; 200 repeated HUD draws/measurements; font overwritten and deleted after loading; missing/invalid font fallbacks.

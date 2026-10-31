@@ -1,0 +1,1 @@
+PASS: BT4 portrait runtime loading, names, crop bounds and original/expanded projection at four aspect ratios.

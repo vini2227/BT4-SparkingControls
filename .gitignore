@@ -1,0 +1,11 @@
+*.exe
+*.dll
+*.lib
+*.pdb
+*.zip
+__pycache__/
+checks/
+desenvolvimento/analysis/
+desenvolvimento/build_tools/
+desenvolvimento/build-info.json
+launcher.log

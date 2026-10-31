@@ -1,0 +1,72 @@
+Automatic resolution: COFF symbols, native interface signatures, bounded input/state ABI contracts and symbolic reference targets.
+Game SHA256: 5d63202f94f3bc91abe383bf1f46919754422005c0a525646f35fce93ab04cfb
+PASS BtlInput_BuildRecord @ 0x73FF0
+PASS BtlInput_BuildCommands @ 0x73DA0
+PASS BtlInput_TestAction @ 0x75660
+PASS BtlInput_Fetch @ 0x746B0
+PASS BtlDecide_Attack @ 0x35CC0
+PASS BtlAct_GuardHandler @ 0x20970
+PASS BtlAct_RushDashHandler @ 0x285F0
+PASS BtlChar_GetObj @ 0x61F20
+PASS BtlMember_GetActiveGauge @ 0x65630
+PASS BtlMember_HasAbility @ 0x65FB0
+PASS BtlCharApi_GetChara @ 0x470F0
+PASS BtlCharApi_GetPlayerSuperData @ 0x475A0
+PASS BtlCharApi_GetPlayerSkillData @ 0x475D0
+PASS BtlChar_TestFlag @ 0x588D0
+PASS BtlAct_GetCurrent @ 0x4BA30
+PASS BtlInput_IsCmdPressed @ 0x755A0
+PASS BtlInput_IsHeld @ 0x75530
+PASS BtlSuper_GetKiCost @ 0x88AB0
+PASS BtlSkill_GetBlastCost @ 0x89AF0
+PASS BtlAct_Action67to69 @ 0x1C060
+PASS BtlAct_Request @ 0x4B9A0
+PASS HudPrompt_SetButton @ 0x142E40
+PASS BtlChar_FindBySide @ 0x61EE0
+PASS BtlAct_GetIdClass @ 0x4BAB0
+PASS BtlCtrl_GetChangePrompt @ 0x83760
+PASS HudPrompt_SetCommand @ 0x143060
+PASS BtlInput_TestSwitch @ 0x73C70
+PASS HudPrompt_UpdateButton @ 0x140BF0
+PASS HudPrompt_UpdateCommand @ 0x1420F0
+PASS HudNode_Draw @ 0x12D400
+PASS BtlAct_CheckTransformInput @ 0x37040
+PASS BtlAct_CanTransform @ 0x36F60
+PASS BtlAct_QueueTransform @ 0x37150
+PASS BtlParam_GetSlotId @ 0x853A0
+PASS BtlParam_GetSlotCost @ 0x853D0
+PASS BtlParam_GetSlotA0 @ 0x85400
+PASS BtlParam_GetSlotA4 @ 0x85430
+PASS BtlParam_GetSlotA8 @ 0x85460
+PASS BtlParam_CountSlots @ 0x854B0
+PASS BtlParam_GetUnkAC @ 0x85380
+PASS ChrCam_UpdateInput @ 0x51770
+PASS BtlInput_IsPressed @ 0x75500
+PASS BtlDecide_Main @ 0x35100
+PASS BtlAct_VanishStepHandler @ 0x26C20
+PASS BtlAct_VanishBehindHandler @ 0x27130
+PASS BtlParam_GetAmountA @ 0x86050
+PASS BtlParam_GetAmountB @ 0x86090
+PASS BtlAct_RushRapidHandler @ 0x192F0
+PASS BtlParam_GetUnkB4 @ 0x85540
+PASS BtlParam_GetCostAE @ 0x855D0
+PASS BtlAct_CanFuse @ 0x372A0
+PASS BtlAct_CanSwitch @ 0x375B0
+PASS BtlMember_NextSwitchTarget @ 0x65850
+PASS BtlMember_GetGauge @ 0x65610
+PASS Port_PadRead @ 0x2B55E0
+PASS Port_NetActive @ 0x2ED020
+PASS Port_NetMe @ 0x2EA200
+PASS BtlPause_GetMenuPad @ 0x1451E0
+PASS BtlSuper_GetPromptRow @ 0x88EB0
+PASS BtlInput_RemapButtons @ 0x73940
+PASS BtlInput_MergeStick @ 0x73D10
+PASS Bt4_SpendTransformKi @ 0x66930
+PASS Bt4_CharaFromModelFile @ 0x156FA0
+PASS Bt4_ModelFile @ 0x156ED0
+PASS: one local packet hook, rebased payload references, all HUD globals and the native online status.
+No game file changed. Resolution occurs at launch/relaunch, never in the input loop. Structural compatibility is not an online gameplay test.
+
+PASS: changed hash accepted without editing a whitelist.
+PASS: moved executable sections rebuild hook, trampoline, 24 payload targets and HUD at three allocation addresses.
+PASS: changed native instructions, redirected references and stripped symbols rejected before launching.

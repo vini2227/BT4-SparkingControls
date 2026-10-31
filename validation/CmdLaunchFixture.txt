@@ -1,0 +1,1 @@
+PASS: direct/nested CMD, spaces and ampersand in paths, script setup/current directory, descendant hook before first instruction; probe children stopped before game code.
