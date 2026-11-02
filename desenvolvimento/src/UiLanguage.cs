@@ -22,6 +22,7 @@ static class UiLanguage {
         { "Procurar...", new[]{"Browse...","Examinar...","Procurar..."} },
         { "Selecione o BT4decomp.exe. O caminho fica salvo para as próximas aberturas.", new[]{"Select BT4decomp.exe. Its location will be saved for future launches.","Selecciona BT4decomp.exe. La ubicación se guardará para las próximas aperturas.","Selecione o BT4decomp.exe. O caminho fica salvo para as próximas aberturas."} },
         { "Caminho salvo carregado.", new[]{"Saved location loaded.","Ubicación guardada cargada.","Caminho salvo carregado."} },
+        { "Caminho salvo automaticamente.", new[]{"Location saved automatically.","Ubicación guardada automáticamente.","Caminho salvo automaticamente."} },
         { "Escolha o executável na pasta atual do jogo.", new[]{"Choose the executable in the current game folder.","Elige el ejecutable en la carpeta actual del juego.","Escolha o executável na pasta atual do jogo."} },
         { "Salvar e iniciar", new[]{"Save and start","Guardar e iniciar","Salvar e iniciar"} },
         { "Salvar caminho", new[]{"Save location","Guardar ubicación","Salvar caminho"} },

@@ -2,13 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9 Test
+# BT4 Sparking Controls — 0.9.5 Test
 
-0.9 の変更：R7.1 Hotfix への適応型互換性チェックは起動時のみ実行します。地面に倒れた際の手動起き上がりは○のみ（○＋方向で方向指定、立ち状態のR1ガードと自動起き上がりは維持）。中央HUDで□を△に重ねる位置を修正しました。以前の改善もすべて含まれます。
+0.9.5 の変更：地上復帰で元のボタンと方向入力を使用できます。対応する空中の被弾状態では R1 と ↑/↓ で復帰を要求します。新しいゲーム関数を検証し、互換性確認に失敗しても最後の EXE/CMD を自動保存します。新しい中央 HUD では四角／丸が三角の位置と倍率に追従します。規則、時間、消費は BT4 のままで、旧版にも対応します。0.9.1～0.9.5 の修正を含みます。自動テストは実際のオンライン対戦の確認に代わるものではありません。
 
-Windows ZIP を展開し、BT4-SparkingControls.exe を起動します。BT4decomp.exe または同じフォルダーの .cmd を選択し、保存して起動してください。0.9 Test にはフォント、CMD 起動、撃ち合い入力、ポートレートの修正が含まれます。設定は保持されます。Windows 専用です。
+Windows ZIP を展開し、BT4-SparkingControls.exe を起動します。BT4decomp.exe または同じフォルダーの .cmd を選択し、保存して起動してください。0.9.5 Test にはフォント、CMD 起動、撃ち合い入力、ポートレートの修正が含まれます。設定は保持されます。Windows 専用です。
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.5-test/BT4-SparkingControls-0.9.5-Test-Windows.zip) · [0.9.5 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## 操作
 

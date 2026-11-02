@@ -119,7 +119,7 @@ sealed class PeImage {
 }
 public sealed class OnlineDataPointer {public int offset;public string symbol,literal;}
 public sealed class OnlineReference { public int[] code_offsets;public int local_index,local_count,data_origin_addend;public OnlineDataPointer[] pointers;public int data_length;public string data_mask,data_bytes;public int offset,width,addend,bias; public string symbol,kind,data_expected,symbol_scope; }
-public sealed class OnlineSignature { public string name,expected,mask; public int length; public OnlineReference[] references; }
+public sealed class OnlineSignature { public string name,expected,mask; public int length; public OnlineReference[] references; public OnlineSignature[] alternatives,dependencies; public bool prompt_centered_projection; }
 public sealed class PacketContract { public int format;public string epilogue,binding;public string entry,entry_call_symbol,packet;public int entry_call_offset,return_offset;public OnlineSignature caller; }
 public sealed class OnlineMetadata {
     public PacketContract packet_contract;
@@ -142,6 +142,21 @@ static class OnlineCompatibility {
         catch(IOException primary){string legacy=Path.Combine(Program.Root,"compatibility-legacy.json");if(!File.Exists(legacy))throw;var previous=new JavaScriptSerializer {MaxJsonLength=4*1024*1024}.Deserialize<OnlineMetadata>(File.ReadAllText(legacy));try{report=ResolveImage(image,profile,previous);}catch(IOException secondary){throw new IOException(primary.Message+Environment.NewLine+"Legacy profile: "+secondary.Message,primary);}}
 
         File.WriteAllText(Path.Combine(Program.Root,"compatibility-report.txt"),report);
+    }
+    internal static OnlineSignature ReviewedSignature(PeImage image,OnlineSignature signature) {
+        try { CheckSignature(image,signature);return signature; }
+        catch(IOException original) {
+            if(signature.alternatives==null||signature.alternatives.Length>4)throw;
+            foreach(var alternative in signature.alternatives){
+                if(alternative==null||alternative.name!=signature.name||alternative.alternatives!=null||alternative.dependencies!=null&&alternative.dependencies.Length>4)continue;
+                try {
+                    CheckSignature(image,alternative);
+                    foreach(var dependency in alternative.dependencies??new OnlineSignature[0])CheckSignature(image,dependency);
+                    return alternative;
+                }catch(IOException) { }
+            }
+            throw original;
+        }
     }
     internal static void CheckSignature(PeImage image,OnlineSignature signature) {
         int rva=image.Symbol(signature.name);byte[] expected=Program.Unhex(signature.expected),mask=Program.Unhex(signature.mask);
@@ -230,15 +245,20 @@ static class OnlineCompatibility {
     }
     public static string ResolveImage(PeImage image,Profile profile,OnlineMetadata metadata,string resourceRoot=null){
         byte[] template=File.ReadAllBytes(Path.Combine(resourceRoot??Program.Root,"SparkingControls.payload"));
-        if(metadata.format!=2||metadata.payload_sha256!=profile.payload_sha256||PeImage.Digest(template)!=metadata.payload_sha256||metadata.functions==null||metadata.functions.Length<50||metadata.game_references==null||(resourceRoot==null?metadata.game_references.Length!=32:metadata.game_references.Length<24||metadata.game_references.Length>64)||metadata.entry_offset<0x1000||metadata.entry_offset>=0xe000||metadata.trampoline_length!=6||image.ImageBase!=profile.image_base)throw Changed("compatibility metadata");
+        if(metadata.format!=2||metadata.payload_sha256!=profile.payload_sha256||PeImage.Digest(template)!=metadata.payload_sha256||metadata.functions==null||metadata.functions.Length<50||metadata.game_references==null||(resourceRoot==null?metadata.game_references.Length!=29:metadata.game_references.Length<24||metadata.game_references.Length>64)||metadata.entry_offset<0x1000||metadata.entry_offset>=0xe000||metadata.trampoline_length!=6||image.ImageBase!=profile.image_base)throw Changed("compatibility metadata");
         var report=new StringBuilder();report.AppendLine("Automatic resolution: COFF symbols, native interface signatures, bounded input/state ABI contracts and symbolic reference targets.");report.AppendLine("Game SHA256: "+image.Sha256);
         // Preserve exact historical executables accepted by the previous release.
         // A full-file cryptographic match is required here. Unknown hashes still
         // pass every instruction, address-target and literal-content check below.
         bool approvedHistory=metadata.approved_history_sha256!=null&&metadata.approved_history_sha256.Contains(image.Sha256);
+        bool centeredPrompt=false;
         foreach(var signature in metadata.functions){
             if(approvedHistory){report.AppendLine("PASS exact historical executable: "+signature.name);continue;}
-            try { CheckSignature(image,signature); }
+            try {
+                var selected=ReviewedSignature(image,signature);
+                if(signature.name=="HudNode_Draw")centeredPrompt=selected.prompt_centered_projection;
+                if(selected!=signature)report.AppendLine("PASS reviewed native variant with complete instruction/reference and dependency checks: "+signature.name);
+            }
             catch(IOException) {
                 if(signature.name=="Port_NetActive"){
                     CheckNetActiveContract(image,metadata);
@@ -262,7 +282,7 @@ static class OnlineCompatibility {
         var globals=new Dictionary<string,int>();foreach(string name in metadata.globals)globals[name]=image.Symbol(name);
         globals["online_mode"]=checked(image.Symbol(metadata.online_symbol)+metadata.online_addend);
         profile.patches=new[]{new Patch {rva=site,expected=Program.Hex(prologue),replacement=Program.Hex(jump)}};
-        profile.symbols=globals;profile.resolved_payload=payload;profile.game_sha256=image.Sha256;
+        profile.symbols=globals;profile.resolved_payload=payload;profile.game_sha256=image.Sha256;profile.prompt_centered_projection=centeredPrompt;
         report.AppendLine("PASS: one local packet hook, rebased payload references, all HUD globals and the native online status.");
         report.AppendLine("No game file changed. Resolution occurs at launch/relaunch, never in the input loop. Structural compatibility is not an online gameplay test.");return report.ToString();
     }
@@ -280,12 +300,14 @@ static class OnlineCompatibilityTests {
             foreach(var section in image.Sections)Buffer.BlockCopy(BitConverter.GetBytes(section.Rva+delta),0,moved,section.Header+12,4);
             Buffer.BlockCopy(BitConverter.GetBytes(image.SizeOfImage+delta),0,moved,image.PeOffset+24+56,4);
             // Relative references move with their containing section. Absolute references need the same delta.
-            foreach(var f in metadata.functions.Where(f=>f.name!="Port_PadRead").Concat(metadata.packet_contract==null?new OnlineSignature[0]:new[]{metadata.packet_contract.caller}))foreach(var reference in f.references)if(reference.kind=="absolute"){
+            var selectedFunctions=metadata.functions.Where(f=>f.name!="Port_PadRead").Select(f=>OnlineCompatibility.ReviewedSignature(image,f)).ToArray();
+            var selectedWithDependencies=selectedFunctions.Concat(selectedFunctions.SelectMany(f=>f.dependencies??new OnlineSignature[0])).ToArray();
+            foreach(var f in selectedWithDependencies.Concat(metadata.packet_contract==null?new OnlineSignature[0]:new[]{metadata.packet_contract.caller}))foreach(var reference in f.references)if(reference.kind=="absolute"){
                 int off=image.RawOffset(image.Symbol(f.name)+reference.offset,reference.width);
                 if(reference.width==4)Buffer.BlockCopy(BitConverter.GetBytes(checked(BitConverter.ToInt32(moved,off)+delta)),0,moved,off,4);
                 else Buffer.BlockCopy(BitConverter.GetBytes(BitConverter.ToInt64(moved,off)+delta),0,moved,off,8);
             }
-            foreach(var f in metadata.functions.Where(f=>f.name!="Port_PadRead"))foreach(var reference in f.references)if(reference.pointers!=null||reference.code_offsets!=null){
+            foreach(var f in selectedWithDependencies)foreach(var reference in f.references)if(reference.pointers!=null||reference.code_offsets!=null){
                 byte[] original=image.Read(image.Symbol(f.name),f.length);long v=NumberForTest(original,reference.offset,reference.width);long target=reference.kind=="relative"?image.Symbol(f.name)+reference.offset+reference.bias+v:v-image.ImageBase;
                 if(reference.code_offsets!=null)for(int k=0;k<reference.code_offsets.Length;k++){int off=image.RawOffset((int)target+k*8,8);Buffer.BlockCopy(BitConverter.GetBytes(BitConverter.ToInt64(bytes,off)+delta),0,moved,off,8);}
                 foreach(var pointer in reference.pointers??new OnlineDataPointer[0]){int off=image.RawOffset((int)target-reference.data_origin_addend+pointer.offset,8);Buffer.BlockCopy(BitConverter.GetBytes(BitConverter.ToInt64(bytes,off)+delta),0,moved,off,8);}

@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.9.5
+- The replacement technique glyph uses the reviewed newer renderer's centered
+  4:3 transform when the game's HUD is Centered. This follows the native
+  Triangle's position and size instead of using a fixed horizontal offset.
+- Previous renderer projection and Original HUD placement remain preserved.
+- Renderer capability is selected during existing startup compatibility checks.
+  No image searching, new game hooks or extra combat diagnostics.
+
+## 0.9.4
+- Remembers the last EXE or CMD as soon as it is selected, after a short pause
+  while typing, when leaving the field, and when closing the launcher.
+- The location is remembered even if game compatibility validation fails.
+  Launching still requires the same compatibility checks.
+- The last saved location takes priority over a stale startup path argument.
+- Incomplete/unsupported entries do not replace the last EXE or CMD choice.
+- Saves only when the path changes; the short debounce timer belongs to the
+  launcher window and is disposed before gameplay. Other controls unchanged.
+
+## 0.9.3
+- Recognizes the reviewed newer native model lookup, Z-Counter capture and HUD
+  marker variants. Old interfaces remain supported. Complete instruction,
+  symbolic target and new dependency checks are retained for each variant.
+- Variant detection happens only on startup/relaunch. No whitelist of new EXE
+  hashes, combat-time scanning, extra diagnostics or control-payload changes.
+- The 0.9.2 recovery controls and saved settings remain unchanged.
+- Future structural changes outside reviewed interfaces can still need review.
+
+## 0.9.2
+- Standard-style recovery controls in reviewed launch, blow-away and falling
+  reactions: R1 sends the native recovery face button, without counter stance.
+- Up/Down remain available for native recovery instead of opening panels or
+  attack shortcuts. In the launched reaction, a vertical direction encodes the
+  native direction-plus-face recovery chord. Stick and D-pad both work.
+- Grounded recovery keeps the original buttons and directional choices.
+- These are input mappings, not Sparking! ZERO physics or recovery rules.
+  Native timing, Ki costs, eligibility, animations and automatic recovery stay
+  under BT4 control. No repeating recovery macros or game-state writes.
+- Online mapping is performed only on the local pad before native sampling.
+  End-to-end online gameplay still requires testing.
+
+## 0.9.1
+- Restored native grounded recovery. Square, Triangle, Cross, Circle and
+  directional recovery are no longer restricted to physical Circle.
+- While downed, the original controller packet reaches the game unchanged.
+  R1 is not translated to Circle during that state. The game still decides
+  recovery eligibility and automatic recovery timing.
+- Other controls, compatibility checks, HUD and saved settings are unchanged.
+- The historical Circle-only behavior described under 0.7 below is superseded.
+
+Run BT4-SparkingControls.exe, select BT4decomp.exe, then Save and start.
+Target reviewed: BT4 B14 Rev2 / v0.1.39.2 R7.1 Hotfix; earlier reviewed interfaces are retained.
+
+The historical Circle-only behavior in 0.7–0.9 is superseded by 0.9.1.
+
 ## 0.9
 - Compatible with the reviewed R7.1 Hotfix input collector without adding its full-file hash to an allowlist or regenerating its controls payload.
 - A bounded symbolic input-boundary check accepts equivalent instruction reordering/register allocation in the native packet writer. It verifies the 18-byte layout, inverted button word, four analog bytes, zero padding, successful return, Win64 register/stack preservation and unchanged online sampling caller.

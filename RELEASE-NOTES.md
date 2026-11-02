@@ -1,30 +1,16 @@
-# BT4 Sparking Controls 0.9 Test
+# BT4 Sparking Controls 0.9.5 Test
 
-This release includes **all work since the previous public 0.6 Test release**, including the local 0.7 and 0.8 updates.
+Includes all fixes from 0.9.1 through 0.9.5 since the previous public 0.9 Test release.
 
-## 0.9 — Adaptive R7.1 Hotfix compatibility
-- Accepts compatible native input-collector changes without a full-file hash allowlist. A bounded symbolic check verifies the 18-byte packet, inverted buttons, four axes, zero padding, successful return, Win64 preservation and unchanged online sampling caller.
-- Equivalent axis-load reordering and register allocation are accepted; incompatible packet/ABI/caller changes remain rejected. Other reviewed native interfaces and references stay checked.
-- Analysis runs only at startup/relaunch; initial boundary plus full validation measured about 0.2 seconds in this test environment. No new per-frame work.
+- **Recovery:** native ground buttons/directions restored; R1 and Up/Down request supported air recovery using native input mappings. BT4 still determines timing, eligibility and Ki cost. The old Circle-only restriction is removed.
+- **Compatibility:** complete checked alternatives for the reviewed newer model lookup, Z-Counter capture and HUD marker functions, retaining the earlier 64 signatures and verifying new dependencies. Startup/relaunch analysis only; unsupported future structure can still need review.
+- **Last EXE/CMD:** automatically remembered on selection, typing pause, field exit and close, even if validation fails. Latest saved choice takes priority over stale startup paths. No idle rewrites or gameplay timer.
+- **Prompt alignment:** Square/Circle uses the newer renderer's native centered projection. Older renderer and Original HUD behavior remain preserved; no fixed pixel offset, image search or new hooks.
 
-## 0.8 — Boost prompt alignment
-- Square/Circle replacements stay over the native Triangle in the BT4 Centered HUD. The prompt is no longer centered a second time.
-- Verified against live captured coordinates, with 33 checks covering four aspect ratios and both sides.
+All earlier BT4 features remain included. Settings remain under `%LOCALAPPDATA%\BT4-SparkingControls`. Close the helper before replacing its EXE. Extract the Windows ZIP, select the game EXE or a sibling translation CMD, then Save and start. See the main page and included English TXT for full setup and controls.
 
-## 0.7 — Circle-only grounded recovery
-- Manual get-up while grounded/downed requires Circle. Circle + direction retains native directional recovery.
-- Standing R1 guard and native automatic recovery remain. The change is scoped to lying/down actions, not every airborne hit reaction.
-- Other local-player menu/state, remote input and CPU/scripted input are preserved.
+**Validation:** 1,764,747 emulated packet/ABI/native-command checks on the reviewed reinstalled game; 236 interface/variant rejection checks; 154 input-boundary checks; 51 projection checks; 21 last-path persistence checks; shared-settings, relocation and suspended-hook readback. The payload is unchanged since 0.9.2. Automated checks are not a live online match, physical-controller timing or sustained-FPS test; the corrected 0.9.5 alignment still awaits live-match confirmation.
 
-## Included earlier improvements
-- In-memory HUD fonts, available font-style selection and fallback for the reported Fira Sans Condensed / Regular error.
-- EXE and CMD translation launch, including nested scripts and inherited language variables.
-- Native Triangle preserved in energy struggles; BT4 character names and face-centered portraits.
-- Red launcher, four-star emblem, four panel placements, split-screen, configurable F6/F7/F8 shortcuts, shortcut lock and persisted in-game/app preferences.
-
-## Validation and scope
-1,541,133 emulated packet/ABI/native-command checks passed against resolved R7.1 addresses at three allocations; 155 focused input-boundary acceptance/rejection checks; relocation/corruption/stripped-symbol tests; suspended hook, CMD and saved-setting checks. Earlier font, portrait, split-screen and projection reports are included. These do not replace physical-controller testing, sustained FPS measurements or live online/rollback matches. Structural changes outside the supported contracts can still require review.
-
-Windows x64 test release; no validated native Linux BT4 package. Game files, game artwork, texture packs and personal settings are not included. Source and AGPL-3.0 license are included.
+Windows x64 test release. No validated native Linux BT4 package. No game executable, artwork, texture pack or personal settings included. Source and AGPL-3.0 license included.
 
 Special thanks to **Aero** for extensive testing, reproduction details and diagnostic logs.

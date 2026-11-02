@@ -2,13 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9 Test
+# BT4 Sparking Controls — 0.9.5 Test
 
-0.9 更新：自适应兼容 R7.1 Hotfix，仅在启动时分析；倒地后手动起身只用圆圈（圆圈加方向可定向起身，站立时 R1 仍可防御，自动起身保留）；修正居中 HUD 的方块覆盖位置。包含所有先前改进。
+0.9.5 更新：倒地时恢复原生按键和方向操作；在支持的空中受击状态下，R1 和 ↑/↓ 请求恢复；验证新版游戏接口；即使兼容性验证失败，也会自动记住最后选择的 EXE/CMD；在新版居中 HUD 中，方块/圆圈跟随三角形的位置和缩放。规则、时机和消耗仍由 BT4 决定，并保留旧版支持。包含 0.9.1–0.9.5 修复；自动测试不能替代真实在线对战。
 
-解压 Windows ZIP，运行 BT4-SparkingControls.exe。选择 BT4decomp.exe 或同一文件夹中的 .cmd，然后保存并启动。0.9 Test 包含字体、CMD 启动、对波输入和头像修复。设置会保留。仅支持 Windows。
+解压 Windows ZIP，运行 BT4-SparkingControls.exe。选择 BT4decomp.exe 或同一文件夹中的 .cmd，然后保存并启动。0.9.5 Test 包含字体、CMD 启动、对波输入和头像修复。设置会保留。仅支持 Windows。
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.5-test/BT4-SparkingControls-0.9.5-Test-Windows.zip) · [0.9.5 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## 操作
 

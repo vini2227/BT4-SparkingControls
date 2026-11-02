@@ -2,13 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9 Test
+# BT4 Sparking Controls — 0.9.5 Test
 
-Neu in 0.9: adaptive Kompatibilität mit R7.1 Hotfix, Prüfung nur beim Start, manuelles Aufstehen am Boden nur mit Kreis (Kreis + Richtung; R1 blockt im Stehen, automatisches Aufstehen bleibt), korrigierte Quadrat-Überlagerung im zentrierten HUD. Frühere Verbesserungen sind enthalten.
+Neu in 0.9.5: native Tasten und Richtungen zur Erholung am Boden; R1 und ↑/↓ fordern die Erholung in unterstützten Luftreaktionen an; geprüfte neue Spielschnittstellen; letzter EXE/CMD-Pfad wird auch bei fehlgeschlagener Prüfung automatisch gespeichert; Quadrat/Kreis folgt Position und Skalierung des Dreiecks im neueren zentrierten HUD. Regeln, Zeiten und Kosten bestimmt weiterhin BT4. Ältere Versionen bleiben unterstützt. Enthält 0.9.1–0.9.5; automatische Tests ersetzen kein echtes Online-Match.
 
-Entpacke das Windows-ZIP und starte BT4-SparkingControls.exe. Wähle BT4decomp.exe oder eine .cmd-Datei im selben Ordner und speichere und starte. Version 0.9 Test enthält Korrekturen für Schriftarten, CMD-Start, Strahlduelle und Porträts. Einstellungen bleiben erhalten. Nur Windows.
+Entpacke das Windows-ZIP und starte BT4-SparkingControls.exe. Wähle BT4decomp.exe oder eine .cmd-Datei im selben Ordner und speichere und starte. Version 0.9.5 Test enthält Korrekturen für Schriftarten, CMD-Start, Strahlduelle und Porträts. Einstellungen bleiben erhalten. Nur Windows.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.5-test/BT4-SparkingControls-0.9.5-Test-Windows.zip) · [0.9.5 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## Steuerung
 

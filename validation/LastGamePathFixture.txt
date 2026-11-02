@@ -1,0 +1,1 @@
+PASS: 21 last-location checks: typed EXE debounce, quoted CMD, close flush, failed-validation persistence without bypass, reopening, stale startup arguments, incomplete edits, missing file, version update and no idle rewrites. Isolated settings only; no game started.

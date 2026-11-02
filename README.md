@@ -6,21 +6,21 @@
 
 # BT4 Sparking Controls
 
-**0.9 Test — Windows Controls and Setup Guide**
+**0.9.5 Test — Windows Controls and Setup Guide**
 
 Sparking! ZERO-inspired controls and battle HUD for **BT4 Decomp**. This is the separate BT4 edition of [BT3 Sparking Controls](https://github.com/vini2227/BT3-SparkingControls). Native animations, damage, Ki costs, range, partner requirements and timing still apply. The game and game artwork are not included.
 
-[**Download Windows x64 ZIP**](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [**Release notes**](https://github.com/vini2227/BT4-SparkingControls/releases/tag/v0.9-test) · [English TXT](docs/Controls-and-Setup-Guide.txt) · [Changes](CHANGELOG.md)
+[**Download Windows x64 ZIP**](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.5-test/BT4-SparkingControls-0.9.5-Test-Windows.zip) · [**Release notes**](https://github.com/vini2227/BT4-SparkingControls/releases/tag/v0.9.5-test) · [English TXT](docs/Controls-and-Setup-Guide.txt) · [Changes](CHANGELOG.md)
 
-## 0.9 — Changes since the previous public release
+## 0.9.5 — Changes since 0.9
 
-- **R7.1 Hotfix compatibility:** accepts compatible input-collection changes by checking the native 18-byte packet, analog layout, button inversion, successful return, Win64 register/stack preservation and online sampling caller. Equivalent instruction reordering and register allocation are accepted automatically. Other reviewed interfaces and references remain checked.
-- **Fast startup-only analysis:** measured around 0.2 seconds for the initial boundary plus full validation in the test environment. No new per-frame analysis or combat polling.
-- **Circle-only manual get-up (0.7):** while grounded/downed, press Circle to recover. Circle + direction chooses a native directional get-up. R1 and directions alone do not request manual get-up; standing guard and native automatic recovery remain available. Other local-player menu/state, CPU/scripted input and remote input are preserved.
-- **Centered HUD boost-glyph alignment (0.8):** the replacement Square/Circle stays over the native Triangle instead of being centered a second time. Checked against live captured prompt coordinates and four aspect ratios.
-- Includes all earlier BT4 improvements: four-star icon/red launcher, native Triangle in beam struggles, names and face-centered portraits, configurable shortcuts, saved preferences, split-screen/ultrawide placement, EXE/CMD translation launch and private in-memory HUD fonts with validated styles/fallback.
+- **Recovery controls (0.9.1–0.9.2):** restored native grounded recovery with face buttons and directions. During supported air reactions, R1 sends the native recovery button and Up/Down remain available for recovery instead of opening panels. Native eligibility, timing, Ki costs and automatic recovery remain under BT4 control.
+- **Updated-game compatibility (0.9.3):** recognizes the reviewed newer model lookup, Z-Counter capture and HUD marker functions through complete instruction, symbolic-target and dependency checks. All 64 earlier interface signatures remain supported. Structural selection runs at startup/relaunch; unsupported future changes may still need review.
+- **Last EXE/CMD remembered automatically (0.9.4):** saves on selection, after a short typing pause, when leaving the field and when closing, even if compatibility validation fails. The last saved choice takes priority over stale startup paths. Incomplete edits do not replace it. The launcher timer stops after saving and is disposed before gameplay.
+- **Centered HUD prompt alignment (0.9.5):** the replacement Square/Circle follows the newer renderer's native centered scale and position. Earlier-renderer projection and Original HUD behavior are preserved. Detection uses the existing startup checks; no pixel search or new game hooks.
+- Includes all earlier improvements: adaptive packet-boundary validation, four-star red launcher, native Triangle in energy struggles, names and portraits, configurable shortcuts, persistent preferences, split-screen/ultrawide layouts, translation CMD launch and private in-memory HUD fonts.
 
-The first public release was **0.6 Test**. Local 0.7 and 0.8 improvements are included in this **0.9 Test** download. [Complete version-by-version history](CHANGELOG.md).
+This download includes all local fixes from **0.9.1 through 0.9.5**. [Complete version history](CHANGELOG.md).
 
 **Windows x64 test release. There is no validated native Linux BT4 package.**
 
@@ -30,6 +30,8 @@ The first public release was **0.6 Test**. Local 0.7 and 0.8 improvements are in
 2. Click **Browse** and select your `BT4decomp.exe`. For a translation launcher, select its `.cmd` in the **same folder** as `BT4decomp.exe` (for example, `Jogar em Portugues.cmd`). Nested CMD calls, setup steps and language environment variables are preserved.
 3. Choose language, panel placement, attack visibility and shortcuts.
 4. Click **Save and start**. Launch through the helper to use the modified controls.
+
+The last selected EXE/CMD is remembered automatically, even if you close without saving or compatibility validation fails. Launching still requires compatibility validation.
 
 The single EXE includes its helper resources. No modloader or game recompilation is required. The helper patches the launched process in memory; it does not replace game files. A selected translation CMD may prepare its own files.
 
@@ -51,9 +53,13 @@ Settings are stored in `%LOCALAPPDATA%\BT4-SparkingControls`, separately from BT
 
 These labels use PlayStation-style button names. Ordinary menu navigation keeps the original game layout.
 
-## Ground recovery
+## Recovery
 
-While grounded/downed, **Circle** is the manual get-up button. Hold a direction with Circle for directional recovery. R1 and other buttons or directions alone do not request that manual get-up. R1 still guards while standing. Native automatic get-up remains unchanged. This restriction applies to lying/down states, not every airborne hit reaction.
+**On the ground:** native face-button and directional recovery are available when the game permits them. Recovery is no longer restricted to Circle. The native automatic get-up timer remains unchanged.
+
+**During supported air reactions:** R1 sends the native recovery face button. Up/Down on the stick or D-pad remain available instead of opening transformation or attack panels; the launched reaction receives the native vertical-direction-plus-face chord. Holding a button does not generate repeated recovery presses. R1 still guards normally after recovery.
+
+These are Sparking! ZERO-inspired **input mappings**, not ZERO's physics, animations or recovery rules. BT4 decides eligibility, timing and Ki requirements. Ordinary menus, CPU/scripted input and remote packets keep their native behavior.
 
 ## Special attacks and skills
 
@@ -129,7 +135,7 @@ The helper translates the local controller packet before network sampling. The p
 
 Startup and relaunch checks validate the reviewed native interfaces and typed references. Compatible address-only changes and supported input-collector implementation changes can be accepted automatically. The bounded input contract checks the packet rather than pinning the whole collector body. Missing symbols or structural changes outside the supported contracts may still need a helper update. Universal future-version compatibility and desync-free operation are not guaranteed. BT3 Char Package/Tag Team support is not a claim of support for arbitrary BT4 forks.
 
-Validated: 1,541,133 native packet/ABI/command checks; 1,408 transformation/fusion/switch layout checks; portrait loading/names and projection at four aspect ratios; saved preferences; isolated direct/nested CMD launch before first game instruction; 568 current/previous image and corrupted jump-table checks; 200 font draw/measure cycles after file replacement/deletion and invalid/missing font fallback. The R7.1 input boundary passed 155 focused acceptance/rejection checks, including equivalent axis-load reordering and register allocation. Relocation/corruption checks, a suspended-process hook probe, CMD launch and settings checks passed. The intermittent font dialog itself did not reproduce in the font validation run. Automated checks are not physical-controller, sustained-FPS or live online/rollback tests.
+Validated: 1,764,747 emulated packet/ABI/native-command checks on the reviewed reinstalled game; 236 current/previous interface and corruption/dependency checks; 154 input-boundary checks; 51 prompt projection/scale checks across four aspect ratios and both sides; 21 last-location persistence checks; shared settings, relocation and suspended-hook readback. The native payload is unchanged since 0.9.2; projection and path-save changes were checked with focused fixtures. Earlier font, portrait, card-layout and CMD reports are also included. The initial boundary plus full validation measured about 0.25 seconds in this environment. Corrected 0.9.5 alignment has not yet been confirmed in a live match. Automated checks do not replace physical-controller, sustained-FPS or live online/rollback testing.
 
 ## Credits, source and license
 

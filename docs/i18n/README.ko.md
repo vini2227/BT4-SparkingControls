@@ -2,13 +2,13 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9 Test
+# BT4 Sparking Controls — 0.9.5 Test
 
-0.9 변경: R7.1 Hotfix 적응형 호환성 검사, 시작할 때만 분석합니다. 지상 다운 상태의 수동 기상은 동그라미만 사용합니다(동그라미+방향 가능, 서 있을 때 R1 방어와 자동 기상 유지). 중앙 HUD의 네모/세모 겹침 위치를 수정했습니다. 이전 개선 사항도 모두 포함됩니다.
+0.9.5 변경: 지상 회복에 기본 버튼과 방향 입력을 다시 사용할 수 있습니다. 지원되는 공중 피격 상태에서는 R1과 ↑/↓로 회복을 요청합니다. 새 게임 인터페이스를 검증하며, 호환성 검사 실패 시에도 마지막 EXE/CMD를 자동 저장합니다. 새 중앙 HUD에서 네모/동그라미가 세모의 위치와 크기를 따릅니다. 규칙, 시간, 비용은 BT4가 결정하며 이전 버전도 지원합니다. 0.9.1–0.9.5 수정 포함. 자동 테스트는 실제 온라인 대전 확인을 대신하지 않습니다.
 
-Windows ZIP을 풀고 BT4-SparkingControls.exe를 실행하세요. BT4decomp.exe 또는 같은 폴더의 .cmd를 선택한 후 저장하고 시작하세요. 0.9 Test에는 글꼴, CMD 실행, 에너지 충돌 입력, 초상화 수정이 포함됩니다. 설정은 유지됩니다. Windows 전용입니다.
+Windows ZIP을 풀고 BT4-SparkingControls.exe를 실행하세요. BT4decomp.exe 또는 같은 폴더의 .cmd를 선택한 후 저장하고 시작하세요. 0.9.5 Test에는 글꼴, CMD 실행, 에너지 충돌 입력, 초상화 수정이 포함됩니다. 설정은 유지됩니다. Windows 전용입니다.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9-test/BT4-SparkingControls-0.9-Test-Windows.zip) · [0.9 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.5-test/BT4-SparkingControls-0.9.5-Test-Windows.zip) · [0.9.5 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## 조작
 

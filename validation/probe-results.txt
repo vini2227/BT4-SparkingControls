@@ -1,4 +1,4 @@
 PASS: resolved image/payload validation; suspended child creation; PEB/image base; original instruction signatures; free low-memory allocation; payload write; RX protection; one local packet hook; original battle command/decision code untouched; instruction-cache flush; readback.
 Game image base: 0x20000000; add-on base: 0x60000000.
 The child was terminated BEFORE ResumeThread: no game code was executed. This is not a gameplay test.
-Game SHA256 after probe: 7d8182dcd01ca2b42e79b725fd64115dd8a6bfcd0d9e9395a3cc9746e097da38
+Game SHA256 after probe: b769fc6254588a8eea45b3a4c4a18cce2e2768b0b6a2055f3170361e87d6e3d1

@@ -16,3 +16,6 @@ Native maintenance additionally requires Zig 0.13 (`ZIG`), `BT4_GAME` (legacy al
 Native packet tests: after a reviewed native build, run `python desenvolvimento/tests/packet_tests.py --game GAME_EXE`. For a resolved update, first run the helper with `--compat-test GAME_EXE`, then provide its version-cache directory using `--resolved-root CACHE`. These tests emulate the packet translator and are not live online matches.
 
 The BT4 format-4 input contract checks the packet writer symbolically instead of pinning the entire collector implementation. It retains the reviewed Win64 save/restore, argument binding and sample_local caller contracts. Keep the reviewed metadata intact. Run `python run_checks.py Bt4BoundaryFixture` for compatible-reordering/register-allocation and incompatible-packet/ABI/caller tests. The 0.7–0.9 payload has 32 reviewed game references.
+
+Current 0.9.5 payload: 29 exact compiled external references, covering the same unique native targets as the former 32 address loads. All 64 original interface signatures are retained, with strict reviewed alternatives and dependencies for three functions. Preserve these alternatives, typed reference tables and renderer capability when regenerating metadata. Last-location fixture uses isolated settings. Set BT4_GAME and optional BT4_PREVIOUS_GAME before running the new fixtures.
+

@@ -113,24 +113,15 @@ def run_suite(allocated):
     got=invoke(raw,net=net,side=side,socket=port,active=1,story=0,flags=0,action=action,lx=23,ly=240)
     assert got==packet,('beam clash altered',net,side,action,hex(raw));checks+=1
  invoke(0,net=1,side=0,active=1,action=0,story=0,flags=0,injected=0)
- # Ground get-up: only physical Circle reaches any native face/direction input.
+ # Ground get-up preserves every original packet byte, including all face
+ # buttons, independent digital/analog directions, and press/release samples.
  for net,side,port in [(1,0,0),(1,1,0),(0,0,0),(0,1,1)]:
   invoke(0,net=net,side=side,socket=port,active=1,injected=0,story=0,flags=0,action=0)
   for down in [0xd8,0xda,0xdb,0xdc,0xdd,0xde]:
    for raw in [0,0x800,0x8000,0x1000,0x4000,4,0x400,0x100,0x200,0xf0,0x8800,0xdfff,0x2000,0x2800,0xa000,0x2010,0x2080,0xffff]:
     for lx,ly in [(128,128),(0,128),(255,128),(128,0),(128,255)]:
      got=invoke(raw,net=net,side=side,socket=port,active=1,action=down,lx=lx,ly=ly)
-     expected=raw&9
-     if raw&0x2000:
-      dirs=raw&0xf0
-      if lx<78:dirs|=0x80
-      elif lx>178:dirs|=0x20
-      if ly<78:dirs|=0x10
-      elif ly>178:dirs|=0x40
-      expected|=0x2000|dirs
-      assert got[4:6]==bytes([lx,ly])
-     else:assert got[4:6]==bytes([128,128]),(net,side,down,hex(raw),got.hex())
-     assert held(got)==expected and got[2:4]==bytes([128,128]),('down recovery',down,hex(raw),got.hex());checks+=2
+     assert got==packet,('native down packet altered',net,side,down,hex(raw),got.hex(),packet.hex());checks+=1
    # A downed local port cannot clear the other player's active menu/state.
    other=1-side;sentinels=[allocated+0xf100+other*128+12,allocated+0xf500+other*16,allocated+0xf600+other*64,allocated+0xf700+other*32,allocated+0xf780+other*32,allocated+0xf7c0+other*32,allocated+0xf800+other*32,allocated+0xf840+other*64,allocated+0xf8c0+other*32]
    for address in sentinels:set32(address,0x1234abcd)
@@ -138,12 +129,30 @@ def run_suite(allocated):
    for address in sentinels:assert struct.unpack('<I',u.mem_read(address,4))[0]==0x1234abcd;set32(address,0);checks+=1
    # Held guard and grab/fusion pulses must not leak across a knockdown.
    invoke(0x8800,net=net,side=side,socket=port,action=0)
-   assert held(invoke(0x800,socket=port,action=down))==0;checks+=1
+   assert held(invoke(0x800,socket=port,action=down))==0x800;checks+=1
    assert held(invoke(0x2000,socket=port))==0x2000;checks+=1
    assert held(invoke(0x800,socket=port,action=0x38))==0x2000;checks+=1
   assert invoke(0x800,lx=0,ly=255,net=net,side=side,socket=port,active=0,injected=0,action=0xd8)==packet;checks+=1
   assert invoke(0x800,lx=0,ly=255,net=net,side=side,socket=port,active=1,injected=1,action=0xd8)==packet;checks+=1
   if net:assert invoke(0x800,lx=0,ly=255,net=net,side=side,socket=1,active=1,injected=0,action=0xd8)==packet;checks+=1
+ invoke(0,net=1,side=0,socket=0,active=1,injected=0,action=0)
+ # Standard-style air recovery never invokes panel, super or counter aliases.
+ for net,side,port in [(1,0,0),(1,1,0),(0,0,0),(0,1,1)]:
+  for action in [0xce,0xd5,0xd6,0xd9,0xdf]:
+   for raw in [0,0x800,0x2000,0x2800,0x8000,0x1000,0x4000,0x10,0x40,0x50,0x80,0x20,0x210,0x240,0x8200,0x8800,0xffff]:
+    for lx,ly in [(128,128),(0,128),(255,128),(128,0),(128,255)]:
+     got=invoke(raw,net=net,side=side,socket=port,action=action,lx=lx,ly=ly)
+     expected=raw&0xf0f9
+     if raw&0x800 or action==0xce and (raw&0x50 or ly<78 or ly>178):expected|=0x2000
+     assert held(got)==expected and got[2:]==packet[2:],('air recovery packet',net,side,action,hex(raw),got.hex());checks+=1
+     assert struct.unpack('<I',u.mem_read(allocated+0xf10c+side*128,4))[0]==0;checks+=1
+   # Held R1 stays held, without synthetic press/release cycling or macros.
+   for raw in [0x800]*45+[0]*3:
+    assert held(invoke(raw,socket=port))==(0x2000 if raw else 0);checks+=1
+   for options in [dict(active=0),dict(injected=1)]+([dict(socket=1)] if net else []):
+    opts=dict(net=net,side=side,socket=port,active=1,injected=0,action=action);opts.update(options)
+    assert invoke(0x8200,**opts)==packet;checks+=1
+   invoke(0,net=net,side=side,socket=port,active=1,injected=0,action=0)
  invoke(0,net=1,side=0,socket=0,active=1,injected=0,action=0)
  if '--recovery-only' in sys.argv:return 'PASS recovery allocation '+hex(allocated)
  # Pending story event owns physical R3; online and normal fights must not leak it.
@@ -546,6 +555,25 @@ def run_suite(allocated):
   for reg,v in zip([UC_X86_REG_RCX,UC_X86_REG_RDX,UC_X86_REG_R8,UC_X86_REG_R9],args):u.reg_write(reg,v)
   u.emu_start(adr(name),stop,count=100000);assert u.reg_read(UC_X86_REG_RIP)==stop;return u.reg_read(UC_X86_REG_RAX)
  def commands(raw,prev=0):return native('BtlInput_BuildCommands',[chr,native('BtlInput_RemapButtons',[raw,mask]),native('BtlInput_RemapButtons',[prev,mask])])
+ # Check the generated directions/chords against the game's actual, unmodified
+ # input predicates, not a Python reconstruction of those predicates.
+ for net,side,port in [(1,0,0),(1,1,0),(0,0,0),(0,1,1)]:
+  for action in [0xce,0xd5,0xd6,0xd9,0xdf]:
+   for raw,lx,ly in [(0x10,128,128),(0x40,128,128),(0,128,0),(0,128,255),(0x800,128,128)]:
+    got=invoke(raw,net=net,side=side,socket=port,action=action,lx=lx,ly=ly)
+    bits=native('BtlInput_RemapButtons',[held(got),mask]);u.mem_write(buf+0x100,got[4:6])
+    bits=native('BtlInput_MergeStick',[chr,bits,buf+0x100]);set32(chr+0x73c,bits);set32(chr+0x744,bits)
+    if raw==0x800:assert bits&0x100000;checks+=1
+    else:
+     up=raw==0x10 or ly==0;condition=(48 if up else 47) if action==0xce else (41 if up else 40)
+     allow_native[0]=True
+     try:assert native('BtlInput_TestAction',[chr,condition,1])==1,(action,raw,ly,condition);checks+=1
+     finally:allow_native[0]=False
+     if action==0xce:
+      set32(chr+0x744,0);allow_native[0]=True
+      try:assert native('BtlInput_TestAction',[chr,condition,1])==0;checks+=1
+      finally:allow_native[0]=False
+ invoke(0,net=1,side=0,socket=0,action=0)
  for raw,expected in [(0x8200,0x200),(0x1200,0x400),(0x2200,0x800),(0x210,0x4000),(0x280,0x8000)]:
   got=held(invoke(raw));assert commands(got,0x100)&expected;assert commands(got,got)&expected==0;checks+=2
  assert commands(0x4000,0)&0x20000;checks+=1
@@ -860,6 +888,7 @@ if '--recovery-only' in sys.argv:
  (R/'analysis/recovery-test-results.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
  raise SystemExit(0)
 lines+=['PASS: '+str(checks)+' packet/ABI/native-command checks; new controls offline on both ports; menus preserved; online local side only, relocation, held techniques/skills, transform packets, switch panel and native teammate navigation/acknowledgment, cancellation and timeout, native swap acknowledgment/release and bounded retries online and on both offline ports, fusion tabs and native long-hold packets on host/guest and both offline ports, native R1+Square priority without attack/guard/counter leaks, R3 emergency shortcut in native eligibility window and no original R3 leakage, native boost chord, vertical Z Dash and disabled legacy double taps, Circle-only manual ground get-up and native automatic recovery untouched; guard return after Circle release with actual native counter animation/exit tests and varied hold durations/delayed input acknowledgment, no writes to fighter or game globals.','NOT TESTED: a live online match, actual ping/rollback behavior, physical-controller timing or opponent compatibility end-to-end.']
+lines=[line.replace('Circle-only manual ground get-up','native manual ground recovery and standard-style air recovery') for line in lines]
 print('\n'.join(lines));(R/'analysis/packet-test-results.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
 
 

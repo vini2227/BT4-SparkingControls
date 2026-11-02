@@ -12,7 +12,7 @@ for name in names:
     command=[csc,'/nologo','/target:exe','/platform:x64','/optimize+','/main:'+name,'/out:'+str(exe),'/r:System.Windows.Forms.dll','/r:System.Drawing.dll','/r:System.Web.Extensions.dll']
     command+=['/resource:'+str(p)+',OnlineBundle/'+n for n,p in resources.items()]
     subprocess.run(command+sources+[str(d/'tests'/(name+'.cs'))],check=True)
-    args=[str(dest)] if name in ['SavedSettingsFixture','ShortcutFixture','LauncherFixture','PreviewShortcutFixture'] else [game,str(dest)]
+    args=[str(dest)] if name in ['SavedSettingsFixture','LastGamePathFixture','ShortcutFixture','LauncherFixture','PreviewShortcutFixture'] else [game,str(dest)]
     if name=='ArenaPlacementFixture':args=[str(r/'arena-probe.exe'),str(dest)]
     if name=='RendererCaptureFixture':args=[game,str(r/'renderer-capture-probe.exe'),str(dest)]
     if name=='HeapEnvironmentFixture':args=[str(r/'heap-probe.exe'),str(r/'heap-parent.exe'),str(dest)]

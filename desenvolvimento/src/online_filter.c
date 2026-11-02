@@ -61,6 +61,20 @@ static void switch_palette(void *chr,int side,int open){
     for(int i=card;i<4;i++)U32(b,44+i*16)=0;
     U32(b,12)=open&&card?2:0;U32(b,0)++;
 }
+/* Keep reaction-only work separate from the normal combat/panel path. */
+static __attribute__((noinline)) void recovery_packet(int action,int side,u16 raw,u8 *data){
+    U32((void *)MAIL,0x10c+side*128)=0;
+    for(int i=0;i<16;i++){U32((void *)MAIL,0x600+side*64+i*4)=0;U32((void *)MAIL,0x840+side*64+i*4)=0;}
+    for(int i=0;i<8;i++){U32((void *)MAIL,0x700+side*32+i*4)=0;U32((void *)MAIL,0x780+side*32+i*4)=0;U32((void *)MAIL,0x7c0+side*32+i*4)=0;U32((void *)MAIL,0x800+side*32+i*4)=0;U32((void *)MAIL,0x8c0+side*32+i*4)=0;}
+    for(int i=0;i<4;i++)U32((void *)MAIL,0x500+side*16+i*4)=0;
+    if(action==0xd8||(action>=0xda&&action<=0xde))return;
+    unsigned recover=raw&0xf0f9u;
+    if(raw&0x800u)recover|=0x2000u; /* R1 -> native recovery face button. */
+    /* Launched recovery needs a face press with Up/Down. Only encode that
+       native chord: no repeating presses, timing or action-state changes. */
+    if(action==0xce&&(directions(raw,data)&0x50u))recover|=0x2000u;
+    data[0]=(u8)~recover;data[1]=(u8)~(recover>>8);
+}
 __declspec(dllexport) int PadFilter(int socket,u8 *data){
     int result=((int (*)(int,u8 *))(unsigned long long)TRAMP)(socket,data);
     if(result!=18||socket<0||socket>1)return result;
@@ -84,22 +98,12 @@ __declspec(dllexport) int PadFilter(int socket,u8 *data){
     int action=I32(chr,0x948);
     /* Native beam struggle inputs must bypass super-hold aliases entirely. */
     if(action>=0x130&&action<=0x132){ui_hidden();return result;}
-    /* Native down/get-up checks accept ANY_FACE or a direction. R1 maps to
-       native Circle/guard, so allowing its ordinary mapping also gets up.
-       Only physical Circle may request a manual get-up in these down actions.
-       Circle + direction retains native directional recovery. Automatic native
-       recovery timing, action decisions and remote/CPU input remain untouched. */
-    if(action==0xd8||(action>=0xda&&action<=0xde)){
-        /* Clear only this human port's pending shortcuts and card state. */
-        U32((void *)MAIL,0x10c+side*128)=0;
-        for(int i=0;i<16;i++){U32((void *)MAIL,0x600+side*64+i*4)=0;U32((void *)MAIL,0x840+side*64+i*4)=0;}
-        for(int i=0;i<8;i++){U32((void *)MAIL,0x700+side*32+i*4)=0;U32((void *)MAIL,0x780+side*32+i*4)=0;U32((void *)MAIL,0x7c0+side*32+i*4)=0;U32((void *)MAIL,0x800+side*32+i*4)=0;U32((void *)MAIL,0x8c0+side*32+i*4)=0;}
-        for(int i=0;i<4;i++)U32((void *)MAIL,0x500+side*16+i*4)=0;
-        unsigned recovery=raw&9u;
-        if(raw&0x2000u)recovery|=0x2000u|directions(raw,data);
-        else neutral_stick(data);
-        data[2]=data[3]=128;
-        data[0]=(u8)~recovery;data[1]=(u8)~(recovery>>8);
+    /* Let the native down/get-up logic receive the original packet: it accepts
+       any face button or a direction when the current action allows recovery.
+       Do not apply combat aliases here (held R1 must not become Circle), or
+       gate native recovery behind Circle. Automatic timing stays native. */
+    if((action>=0xd5&&action<=0xdf&&action!=0xd7)||action==0xce){
+        recovery_packet(action,side,raw,data);
         return result;
     }
     int active=action>=0x106&&action<=0x13b;int skill=action>=0xfd&&action<=0x102;

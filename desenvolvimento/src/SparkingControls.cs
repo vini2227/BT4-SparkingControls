@@ -23,6 +23,7 @@ public sealed class Profile {
     public Relocation[] relocations;
     public byte[] resolved_payload;
     public int diagnostic_arena_rva,diagnostic_fps_rva,diagnostic_speed_rva;
+    public bool prompt_centered_projection;
 }
 static class Native {
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
@@ -128,13 +129,13 @@ static class GameData {
 
 // Positions come from the currently visible native HUD sprite, in the game's 512x448 space.
 sealed class TechniquePrompt {
-    public RectangleF NativeBounds;public int Texture;public Rectangle Uv;public string Button;public int Side,AspectMilli,Layout;
+    public RectangleF NativeBounds;public int Texture;public Rectangle Uv;public string Button;public int Side,AspectMilli,Layout;public bool CenteredProjection;
     public RectangleF Project(Size size) {
         float aspect=AspectMilli>=1000 && AspectMilli<=5000?AspectMilli/1000f:(float)size.Width/Math.Max(1,size.Height);
         float w=Math.Min(size.Width,size.Height*aspect),h=w/aspect,left=(size.Width-w)/2,top=(size.Height-h)/2;
-        // BT4 prompt geometry stays on its native page in Original and Centered HUD.
-        // Centering it again moves the glyph away from the native Triangle.
-        float narrow=Layout==1&&aspect>1.34f?1.3333333f/aspect:1;
+        // Older BT4 draws centered prompts on the full native page. The reviewed
+        // newer renderer applies the centered 4:3 transform to this draw scope.
+        float narrow=(Layout==1||Layout==2&&CenteredProjection)&&aspect>1.34f?1.3333333f/aspect:1;
         float pivot=Layout==2?256:Side==0?0:512;
         float x=pivot+(NativeBounds.X-pivot)*narrow;
         return new RectangleF(left+x*w/512,top+NativeBounds.Y*h/448,NativeBounds.Width*narrow*w/512,NativeBounds.Height*h/448);
@@ -262,7 +263,7 @@ sealed class Reader {
                 bool mirror=online?false:((I(root,0)|I(node,0))&2)!=0;
                 if(mirror){float z=511-x1;x1=511-x0;x0=z;}
                 if(x1<=x0 || y1<=y0 || x1-x0>96 || y1-y0>96)return;
-                result.Add(new TechniquePrompt {NativeBounds=new RectangleF(x0,y0,x1-x0,y1-y0),Texture=BitConverter.ToInt16(spr,4),Uv=Rectangle.FromLTRB(BitConverter.ToInt16(spr,16),BitConverter.ToInt16(spr,20),BitConverter.ToInt16(spr,18),BitConverter.ToInt16(spr,22)),Side=online?0:side,AspectMilli=aspect,Layout=layout,Button=slot==0?"□":"○"});
+                result.Add(new TechniquePrompt {NativeBounds=new RectangleF(x0,y0,x1-x0,y1-y0),Texture=BitConverter.ToInt16(spr,4),Uv=Rectangle.FromLTRB(BitConverter.ToInt16(spr,16),BitConverter.ToInt16(spr,20),BitConverter.ToInt16(spr,18),BitConverter.ToInt16(spr,22)),Side=online?0:side,AspectMilli=aspect,Layout=layout,CenteredProjection=p.prompt_centered_projection,Button=slot==0?"□":"○"});
             };
             int state=I(data,0x18+side*4),kind=I(data,0xc0+side*4);
             // Column 2 is the native Triangle. Column 1 already shows Square.
@@ -363,6 +364,19 @@ static class SavedSettings {
     public static string CommonRoot {get{return OverrideDirectory??Path.GetDirectoryName(Program.Root);}}
     public static string LegacyRoot {get{return OverrideDirectory??Program.Root;}}
     public static string FilePath(string name){return Resolve(CommonRoot,LegacyRoot,name);}
+    public static string InitialGamePath(string file,string fallback){
+        if(File.Exists(file)){string saved=File.ReadAllText(file).Trim();if(saved.Length!=0)return saved;}
+        return fallback??"";
+    }
+    public static bool RememberGamePath(string file,string text){
+        string value=(text??"").Trim().Trim('"');
+        if(value.IndexOfAny(Path.GetInvalidPathChars())>=0||!Path.IsPathRooted(value))return false;
+        string extension=Path.GetExtension(value);
+        if(!extension.Equals(".exe",StringComparison.OrdinalIgnoreCase)&&!extension.Equals(".cmd",StringComparison.OrdinalIgnoreCase))return false;
+        value=Path.GetFullPath(value);
+        if(!File.Exists(file)||File.ReadAllText(file)!=value){Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(file)));File.WriteAllText(file,value);}
+        return true;
+    }
     public static string Resolve(string commonRoot,string legacyRoot,string name){
         Directory.CreateDirectory(commonRoot);string target=Path.Combine(commonRoot,name);if(File.Exists(target))return target;
         string legacy=Path.Combine(legacyRoot,name);
@@ -1057,6 +1071,7 @@ sealed class LauncherHeader : TableLayoutPanel {
 
 sealed class GameLocationWindow : Form {
     readonly TextBox pathBox=new TextBox();
+    readonly System.Windows.Forms.Timer pathSaveTimer=new System.Windows.Forms.Timer {Interval=500};
     readonly Label status=new Label();
     readonly List<Action> refreshText=new List<Action>();
     readonly string pathFile;
@@ -1117,24 +1132,39 @@ sealed class GameLocationWindow : Form {
         var buttons=new FlowLayoutPanel {FlowDirection=FlowDirection.RightToLeft,Dock=DockStyle.Fill,AutoSize=true,WrapContents=false,Margin=new Padding(0)};
         var start=Bind(new RoundedButton {Primary=true,AutoSize=true,Margin=new Padding(10,0,0,0)},"Salvar e iniciar");var save=Bind(new RoundedButton {AutoSize=true,Margin=new Padding(10,0,0,0)},"Salvar caminho");var close=Bind(new RoundedButton {AutoSize=true,DialogResult=DialogResult.Cancel,Margin=new Padding(10,0,0,0)},"Fechar");
         start.Click+=(o,e)=>Save(true);save.Click+=(o,e)=>Save(false);buttons.Controls.Add(start);buttons.Controls.Add(save);buttons.Controls.Add(close);footer.Controls.Add(buttons,1,0);layout.Controls.Add(footer,0,3);Controls.Add(layout);AcceptButton=start;CancelButton=close;ApplyLanguageDirection();
-        pathBox.TextChanged+=(o,e)=>SetStatus("Clique em Salvar caminho ou Salvar e iniciar para confirmar.",LauncherTheme.Muted);
+        pathSaveTimer.Tick+=(o,e)=>PersistPath();
+        pathBox.TextChanged+=(o,e)=>{pathSaveTimer.Stop();pathSaveTimer.Start();SetStatus("Escolha o executável na pasta atual do jogo.",LauncherTheme.Muted);};
+        pathBox.Leave+=(o,e)=>PersistPath();
         language.SelectedIndexChanged+=(o,e)=>{try{UiLanguage.Set(UiLanguage.Codes[language.SelectedIndex],true);SuspendLayout();foreach(var update in refreshText)update();status.Text=UiLanguage.Text(statusKey);ApplyLanguageDirection();ResumeLayout(true);}catch(Exception ex){MessageBox.Show(this,UiLanguage.Text("Não foi possível salvar o idioma.")+Environment.NewLine+ex.Message,Text,MessageBoxButtons.OK,MessageBoxIcon.Warning);}};
     }
     protected override void OnHandleCreated(EventArgs e){base.OnHandleCreated(e);}
+    protected override void OnFormClosing(FormClosingEventArgs e){PersistPath();base.OnFormClosing(e);}
+    protected override void Dispose(bool disposing){if(disposing)pathSaveTimer.Dispose();base.Dispose(disposing);}
+    bool PersistPath(){
+        pathSaveTimer.Stop();
+        try {
+            if(!SavedSettings.RememberGamePath(pathFile,pathBox.Text))return false;
+            SetStatus("Caminho salvo automaticamente.",LauncherTheme.Muted);return true;
+        }catch(IOException){SetStatus("Não foi possível salvar. Confira o caminho e tente novamente.",Color.FromArgb(255,142,151));}
+        catch(UnauthorizedAccessException){SetStatus("Não foi possível salvar. Confira o caminho e tente novamente.",Color.FromArgb(255,142,151));}
+        catch(ArgumentException){}catch(NotSupportedException){}
+        return false;
+    }
     void ApplyLanguageDirection(){RightToLeft=UiLanguage.IsRightToLeft?RightToLeft.Yes:RightToLeft.No;RightToLeftLayout=UiLanguage.IsRightToLeft;pathBox.RightToLeft=RightToLeft.No;}
 
     void Browse() {
         using(var select=new OpenFileDialog { Title=UiLanguage.Text("Escolha o executável do BT3 Decomp"),Filter="BT4 (*.exe; *.cmd)|*.exe;*.cmd|BT4decomp.exe|BT4decomp.exe|CMD (*.cmd)|*.cmd|"+UiLanguage.Text("Executáveis (*.exe)")+"|*.exe",CheckFileExists=true }) {
             try { string current=Path.GetFullPath(pathBox.Text.Trim().Trim('"'));string directory=Path.GetDirectoryName(current);if(Directory.Exists(directory))select.InitialDirectory=directory; }catch(ArgumentException){}catch(NotSupportedException){}catch(PathTooLongException){}
-            if(select.ShowDialog(this)==DialogResult.OK)pathBox.Text=select.FileName;
+            if(select.ShowDialog(this)==DialogResult.OK){pathBox.Text=select.FileName;PersistPath();}
         }
     }
     void Save(bool start) {
         try {
             string exe=Path.GetFullPath(pathBox.Text.Trim().Trim('"'));
+            SavedSettings.RememberGamePath(pathFile,exe);
             string actualGame=GameLaunch.ResolveGame(exe);
             Profile profile=Program.LoadProfile();Program.Validate(actualGame,profile);
-            File.WriteAllText(pathFile,exe);pathBox.Text=exe;
+            pathBox.Text=exe;
             GamePath=exe;GameProfile=profile;SetStatus("Caminho verificado e salvo.",Color.FromArgb(125,219,168));
             if(start) { DialogResult=DialogResult.OK;Close(); }
         }catch(Exception ex) { Program.SessionLog("Launcher validation: "+ex);SetStatus(ex.Message.Split(new[]{'\r','\n'},StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()??UiLanguage.Text("Não foi possível salvar. Confira o caminho e tente novamente."),Color.FromArgb(255,142,151)); }
@@ -1222,7 +1252,7 @@ static class Program {
             }
             string chosen=args.FirstOrDefault(a=>!a.StartsWith("--"));
             string pathFile=SavedSettings.FilePath("game-path.txt");
-            string initial=chosen??(File.Exists(pathFile)?File.ReadAllText(pathFile).Trim():"");
+            string initial=SavedSettings.InitialGamePath(pathFile,chosen);
             string exe;Profile p;
             using(var location=new GameLocationWindow(initial,pathFile)) {
                 if(args.Contains("--launcher-preview")) {
