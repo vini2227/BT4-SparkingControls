@@ -6,21 +6,21 @@
 
 # BT4 Sparking Controls
 
-**0.9.5 Test — Windows Controls and Setup Guide**
+**0.9.7 Test — Windows Controls and Setup Guide**
 
 Sparking! ZERO-inspired controls and battle HUD for **BT4 Decomp**. This is the separate BT4 edition of [BT3 Sparking Controls](https://github.com/vini2227/BT3-SparkingControls). Native animations, damage, Ki costs, range, partner requirements and timing still apply. The game and game artwork are not included.
 
-[**Download Windows x64 ZIP**](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.5-test/BT4-SparkingControls-0.9.5-Test-Windows.zip) · [**Release notes**](https://github.com/vini2227/BT4-SparkingControls/releases/tag/v0.9.5-test) · [English TXT](docs/Controls-and-Setup-Guide.txt) · [Changes](CHANGELOG.md)
+[**Download Windows x64 ZIP**](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.7-test/BT4-SparkingControls-0.9.7-Test-Windows.zip) · [**Release notes**](https://github.com/vini2227/BT4-SparkingControls/releases/tag/v0.9.7-test) · [English TXT](docs/Controls-and-Setup-Guide.txt) · [Changes](CHANGELOG.md)
 
-## 0.9.5 — Changes since 0.9
+## 0.9.7 — Changes since 0.9.5
 
-- **Recovery controls (0.9.1–0.9.2):** restored native grounded recovery with face buttons and directions. During supported air reactions, R1 sends the native recovery button and Up/Down remain available for recovery instead of opening panels. Native eligibility, timing, Ki costs and automatic recovery remain under BT4 control.
-- **Updated-game compatibility (0.9.3):** recognizes the reviewed newer model lookup, Z-Counter capture and HUD marker functions through complete instruction, symbolic-target and dependency checks. All 64 earlier interface signatures remain supported. Structural selection runs at startup/relaunch; unsupported future changes may still need review.
-- **Last EXE/CMD remembered automatically (0.9.4):** saves on selection, after a short typing pause, when leaving the field and when closing, even if compatibility validation fails. The last saved choice takes priority over stale startup paths. Incomplete edits do not replace it. The launcher timer stops after saving and is disposed before gameplay.
-- **Centered HUD prompt alignment (0.9.5):** the replacement Square/Circle follows the newer renderer's native centered scale and position. Earlier-renderer projection and Original HUD behavior are preserved. Detection uses the existing startup checks; no pixel search or new game hooks.
-- Includes all earlier improvements: adaptive packet-boundary validation, four-star red launcher, native Triangle in energy struggles, names and portraits, configurable shortcuts, persistent preferences, split-screen/ultrawide layouts, translation CMD launch and private in-memory HUD fonts.
+- **Native address changes (0.9.6):** capture fields follow their exact symbolic targets instead of fixed addresses embedded in instructions. Harmless relocations can pass while redirected targets and changed code remain rejected.
+- **Input argument registers (0.9.6–0.9.7):** the socket and output buffer may use different preserved Windows x64 registers. The packet decoder follows the verified buffer register, including extended-register addressing. Stack, volatile and overlapping bindings remain rejected.
+- **Updated native input variants:** complete instruction, table and reference checks cover the newer target-stick auxiliary protocol. The latest reviewed producer also verifies the native packet consumer. The helper preserves the auxiliary bytes, including native target signaling. Earlier reviewed versions and all 64 original interface signatures remain available.
+- **Fast startup-only checks:** measured about 0.24 seconds for the initial ABI plus validation in this environment. The native controls payload is unchanged; these updates add no combat polling, diagnostics or hooks.
+- Includes earlier recovery, automatic last-EXE/CMD saving, centered prompt alignment, translated red launcher, portraits, shortcuts and split-screen/ultrawide improvements. [Complete version history](CHANGELOG.md).
 
-This download includes all local fixes from **0.9.1 through 0.9.5**. [Complete version history](CHANGELOG.md).
+This release reduces false incompatibility reports caused by compatible address/register changes. **Real structural or protocol changes can still require review; future game builds are not universally guaranteed.**
 
 **Windows x64 test release. There is no validated native Linux BT4 package.**
 
@@ -135,7 +135,7 @@ The helper translates the local controller packet before network sampling. The p
 
 Startup and relaunch checks validate the reviewed native interfaces and typed references. Compatible address-only changes and supported input-collector implementation changes can be accepted automatically. The bounded input contract checks the packet rather than pinning the whole collector body. Missing symbols or structural changes outside the supported contracts may still need a helper update. Universal future-version compatibility and desync-free operation are not guaranteed. BT3 Char Package/Tag Team support is not a claim of support for arbitrary BT4 forks.
 
-Validated: 1,764,747 emulated packet/ABI/native-command checks on the reviewed reinstalled game; 236 current/previous interface and corruption/dependency checks; 154 input-boundary checks; 51 prompt projection/scale checks across four aspect ratios and both sides; 21 last-location persistence checks; shared settings, relocation and suspended-hook readback. The native payload is unchanged since 0.9.2; projection and path-save changes were checked with focused fixtures. Earlier font, portrait, card-layout and CMD reports are also included. The initial boundary plus full validation measured about 0.25 seconds in this environment. Corrected 0.9.5 alignment has not yet been confirmed in a live match. Automated checks do not replace physical-controller, sustained-FPS or live online/rollback testing.
+Validated: 1,764,747 emulated packet/ABI/native-command checks on the currently reviewed game, preserving nonzero auxiliary bytes; 571 interface/variant checks; 227 ABI checks including preserved-register combinations and invalid packet/argument/caller rejection; 48 independent machine-code writer cases across eight output registers; 51 projection and 21 last-path checks; shared settings, relocation and suspended-hook readback. The initial ABI plus validation measured about 0.24 seconds. Earlier font, portrait, layout and CMD reports remain included. Automated checks do not replace physical-controller, sustained-FPS or live online/rollback testing. The corrected prompt alignment still awaits live-match confirmation.
 
 ## Credits, source and license
 

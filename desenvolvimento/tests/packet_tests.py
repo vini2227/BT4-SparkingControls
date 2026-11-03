@@ -69,7 +69,7 @@ def run_suite(allocated):
  allow_native=[False]
  u.hook_add(UC_HOOK_CODE,hook);u.hook_add(UC_HOOK_MEM_WRITE,write)
  def set32(a,v):u.mem_write(a,struct.pack('<I',v))
- def packet_for(raw,lx=128,ly=128):return struct.pack('<H',(~raw)&65535)+bytes([128,128,lx,ly])+b'\0'*12
+ def packet_for(raw,lx=128,ly=128):return struct.pack('<H',(~raw)&65535)+bytes([128,128,lx,ly])+bytes([17,34,51,68,85,102,119,136,153,170,187,129])
  def invoke(raw=0,lx=128,ly=128,socket=0,**opts):
   nonlocal packet
   global checks

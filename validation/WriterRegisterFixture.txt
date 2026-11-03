@@ -1,0 +1,1 @@
+PASS: 48 semantic packet-writer checks across eight preserved output registers; wrong axes, offsets, length, padding and pointer-sourced buttons rejected.

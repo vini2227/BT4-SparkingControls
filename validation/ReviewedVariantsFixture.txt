@@ -1,1 +1,1 @@
-PASS: 236 reviewed-variant checks; current and previous game accepted; changed instructions, symbolic targets and new helper dependencies rejected. All64 original signatures retained. No gameplay executed.
+PASS: 571 reviewed-variant checks; current and previous game accepted; changed instructions, symbolic targets and new helper dependencies rejected. All64 original signatures retained. No gameplay executed.

@@ -19,3 +19,5 @@ The BT4 format-4 input contract checks the packet writer symbolically instead of
 
 Current 0.9.5 payload: 29 exact compiled external references, covering the same unique native targets as the former 32 address loads. All 64 original interface signatures are retained, with strict reviewed alternatives and dependencies for three functions. Preserve these alternatives, typed reference tables and renderer capability when regenerating metadata. Last-location fixture uses isolated settings. Set BT4_GAME and optional BT4_PREVIOUS_GAME before running the new fixtures.
 
+
+0.9.7 retains the 29-reference payload. Socket and buffer registers are independently decoded. Strict producer variants and the newer Pad_Update consumer are pinned; no unchecked collector fallback is used. Keep symbolic Capture fields, typed tables, previous variants and the renderer capability when regenerating metadata. WriterRegisterFixture covers extended output bases.

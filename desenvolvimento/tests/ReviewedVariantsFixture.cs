@@ -9,7 +9,7 @@ static class ReviewedVariantsFixture {
  static int Main(string[] args){try{
   var bytes=File.ReadAllBytes(args[0]);var image=new PeImage(bytes);var metadata=OnlineCompatibility.Metadata();
   if(metadata.functions.Length!=64||metadata.game_references.Length!=29)throw new Exception("Interface coverage changed");checks++;
-  var changed=metadata.functions.Where(f=>f.alternatives!=null).ToArray();if(changed.Length!=3)throw new Exception("Expected three reviewed variants");
+  var changed=metadata.functions.Where(f=>f.alternatives!=null).ToArray();if(changed.Length!=4)throw new Exception("Expected four reviewed variants");
   foreach(var original in changed){
    var selected=OnlineCompatibility.ReviewedSignature(image,original);if(selected==original)throw new Exception("New game did not use variant "+original.name);checks++;
    var mask=Program.Unhex(selected.mask);var positions=Enumerable.Range(0,mask.Length).Where(i=>mask[i]==255).ToArray();
@@ -17,12 +17,13 @@ static class ReviewedVariantsFixture {
    foreach(var reference in selected.references)Reject(bytes,original,image.RawOffset(image.Symbol(original.name)+reference.offset,reference.width),original.name+" reference "+reference.symbol);
    foreach(var dependency in selected.dependencies??new OnlineSignature[0]){
     Reject(bytes,original,image.RawOffset(image.Symbol(dependency.name),1),dependency.name+" body");
+    var dependencyMask=Program.Unhex(dependency.mask);int middle=dependencyMask.Length/2;while(dependencyMask[middle]!=255)middle++;Reject(bytes,original,image.RawOffset(image.Symbol(dependency.name)+middle,1),dependency.name+" middle instruction/data field");
     foreach(var reference in dependency.references)Reject(bytes,original,image.RawOffset(image.Symbol(dependency.name)+reference.offset,reference.width),dependency.name+" reference");
    }
   }
   var p=Program.LoadProfile();Program.Validate(args[0],p);if(!p.prompt_centered_projection)throw new Exception("New renderer projection not selected");checks++;
   string previous=Environment.GetEnvironmentVariable("BT4_PREVIOUS_GAME")??Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"..","CmdLaunchFixture","script folder & spaces","BT4decomp.exe"));
-  var old=new PeImage(File.ReadAllBytes(previous));foreach(var signature in changed){if(OnlineCompatibility.ReviewedSignature(old,signature)!=signature)throw new Exception("Old signature lost");checks++;}
+  var old=new PeImage(File.ReadAllBytes(previous));foreach(var signature in changed){if(signature.name=="Port_PadRead")Bt4PacketBoundary.CheckSupported(old,metadata);else if(OnlineCompatibility.ReviewedSignature(old,signature)!=signature)throw new Exception("Old signature lost");checks++;}
   var oldProfile=Program.LoadProfile();Program.Validate(previous,oldProfile);if(oldProfile.prompt_centered_projection)throw new Exception("Old renderer projection lost");checks++;
   Console.WriteLine("PASS: "+checks+" reviewed-variant checks; current and previous game accepted; changed instructions, symbolic targets and new helper dependencies rejected. All64 original signatures retained. No gameplay executed.");return 0;
  }catch(Exception e){Console.Error.WriteLine(e);return 1;}}

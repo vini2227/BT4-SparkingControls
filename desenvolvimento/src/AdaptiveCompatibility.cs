@@ -256,6 +256,7 @@ static class OnlineCompatibility {
             if(approvedHistory){report.AppendLine("PASS exact historical executable: "+signature.name);continue;}
             try {
                 var selected=ReviewedSignature(image,signature);
+                if(signature.name=="Port_PadRead"&&selected!=signature)Bt4PacketBoundary.CheckAbi(image,metadata.packet_contract);
                 if(signature.name=="HudNode_Draw")centeredPrompt=selected.prompt_centered_projection;
                 if(selected!=signature)report.AppendLine("PASS reviewed native variant with complete instruction/reference and dependency checks: "+signature.name);
             }
@@ -301,6 +302,10 @@ static class OnlineCompatibilityTests {
             Buffer.BlockCopy(BitConverter.GetBytes(image.SizeOfImage+delta),0,moved,image.PeOffset+24+56,4);
             // Relative references move with their containing section. Absolute references need the same delta.
             var selectedFunctions=metadata.functions.Where(f=>f.name!="Port_PadRead").Select(f=>OnlineCompatibility.ReviewedSignature(image,f)).ToArray();
+            // A reviewed collector variant can contain absolute tables/fields;
+            // relocate its actual references too. Older bounded collectors do
+            // not need a complete matching instruction signature here.
+            try{var originalPacket=metadata.functions.First(f=>f.name=="Port_PadRead");var selectedPacket=OnlineCompatibility.ReviewedSignature(image,originalPacket);if(selectedPacket!=originalPacket)selectedFunctions=selectedFunctions.Concat(new[]{selectedPacket}).ToArray();}catch(IOException){}
             var selectedWithDependencies=selectedFunctions.Concat(selectedFunctions.SelectMany(f=>f.dependencies??new OnlineSignature[0])).ToArray();
             foreach(var f in selectedWithDependencies.Concat(metadata.packet_contract==null?new OnlineSignature[0]:new[]{metadata.packet_contract.caller}))foreach(var reference in f.references)if(reference.kind=="absolute"){
                 int off=image.RawOffset(image.Symbol(f.name)+reference.offset,reference.width);
@@ -364,33 +369,64 @@ static class Bt4PacketBoundary {
  static void Require(bool ok,string detail){if(!ok)throw new IOException("Changed native interface: BT4 input boundary "+detail);}
  static int Find(byte[] code,byte[] pattern,int begin,int limit){int found=-1;for(int i=begin;i+pattern.Length<=Math.Min(limit,code.Length);i++){bool equal=true;for(int k=0;k<pattern.Length;k++)if(code[i+k]!=pattern[k]){equal=false;break;}if(equal){if(found>=0)return -2;found=i;}}return found;}
  public static void Check(PeImage image,PacketContract c){
+  int exit=CheckAbi(image,c);
+  int rva=image.Symbol("Port_PadRead"),length=image.FunctionLength("Port_PadRead");
+  byte[] code=image.Read(rva,length),entry=Program.Unhex(c.entry);
+  var exits=new HashSet<int>();
+  for(int i=entry.Length;i<code.Length-5;i++)if(code[i]==0xb8&&code[i+1]==18&&code[i+2]==0&&code[i+3]==0&&code[i+4]==0)
+   for(int begin=Math.Max(entry.Length,i-160);begin<=i;begin++){int socket,output,width;int binding=FindBinding(code,entry.Length,128);ReadBinding(code,binding,out socket,out output,out width);var decoder=new Writer(code,begin,Math.Min(code.Length,i+128),exit,output);int finish=decoder.Run();if(finish>=0)exits.Add(finish);}
+  Require(exits.Count==1,"18-byte writer/return (buttons, four axes, zero padding)");
+ }
+ internal static void CheckSupported(PeImage image,OnlineMetadata metadata){
+  try{Check(image,metadata.packet_contract);}catch(IOException){
+   var original=metadata.functions.First(f=>f.name=="Port_PadRead");var selected=OnlineCompatibility.ReviewedSignature(image,original);
+   Require(selected!=original,"reviewed auxiliary packet writer");CheckAbi(image,metadata.packet_contract);
+  }
+ }
+ internal static int CheckAbi(PeImage image,PacketContract c){
   int rva=image.Symbol("Port_PadRead"),length=image.FunctionLength("Port_PadRead");
   Require(length>=256&&length<=32768&&c.caller!=null&&c.caller.name=="sample_local","bounds/caller");
   byte[] code=image.Read(rva,length),entry=Program.Unhex(c.entry),epilogue=Program.Unhex(c.epilogue),binding=Program.Unhex(c.binding);
   Require(entry.Length==53&&epilogue.Length==54&&binding.Length==5,"metadata");
   Require(code.Take(entry.Length).SequenceEqual(entry),"Win64 register/stack save");
-  Require(Find(code,binding,entry.Length,128)>=0,"socket/output arguments");
+  Require(FindBinding(code,entry.Length,128)>=0,"socket/output arguments");
   int exit=Find(code,epilogue,entry.Length,256);Require(exit>=0,"Win64 register/stack restore");
-  var exits=new HashSet<int>();
-  for(int i=entry.Length;i<code.Length-5;i++)if(code[i]==0xb8&&code[i+1]==18&&code[i+2]==0&&code[i+3]==0&&code[i+4]==0)
-   for(int begin=Math.Max(entry.Length,i-160);begin<=i;begin++){var decoder=new Writer(code,begin,Math.Min(code.Length,i+128),exit);int finish=decoder.Run();if(finish>=0)exits.Add(finish);}
-  Require(exits.Count==1,"18-byte writer/return (buttons, four axes, zero padding)");
   OnlineCompatibility.CheckSignature(image,c.caller);
+  return exit;
+ }
+ internal static int FindBinding(byte[] code,int begin,int limit){
+  int found=-1;
+  for(int i=begin;i<Math.Min(limit,code.Length)-4;i++){
+   int socket,output,width;
+   if(!ReadBinding(code,i,out socket,out output,out width)||i+width>limit)continue;
+   if(found>=0)return -2;found=i;i+=width-1;
+  }
+  return found;
+ }
+ static bool Preserved(int reg){return reg==3||reg==5||reg==6||reg==7||reg>=12&&reg<=15;}
+ internal static bool ReadBinding(byte[] code,int at,out int socket,out int output,out int width){
+  socket=output=-1;width=0;if(at<0||at+5>code.Length)return false;int begin=at,high=0;
+  if(code[at]==0x41){high=8;at++;}
+  if(at+5>code.Length||code[at]!=0x89||(code[at+1]&0xf8)!=0xc8)return false;
+  socket=(code[at+1]&7)+high;at+=2;
+  int rex=code[at++];if((rex!=0x48&&rex!=0x49)||code[at++]!=0x89||(code[at]&0xf8)!=0xd0)return false;
+  output=(code[at++]&7)+(rex==0x49?8:0);width=at-begin;
+  return Preserved(socket)&&Preserved(output)&&socket!=output;
  }
  sealed class Writer {
-  readonly byte[] b;readonly int limit,exit;int at;bool bad;
+  readonly byte[] b;readonly int limit,exit,packetRegister;int at;bool bad;
   readonly string[] registers=new string[16],output=new string[18];
-  public Writer(byte[] bytes,int begin,int end,int epilogue){b=bytes;at=begin;limit=end;exit=epilogue;for(int i=0;i<16;i++)registers[i]="r"+i;registers[4]="stack";registers[6]="packet";}
+  public Writer(byte[] bytes,int begin,int end,int epilogue,int packet){b=bytes;at=begin;limit=end;exit=epilogue;packetRegister=packet;for(int i=0;i<16;i++)registers[i]="r"+i;registers[4]="stack";registers[packetRegister]="packet";}
   int Byte(){if(at>=limit){bad=true;return 0;}return b[at++];}
   int Int(){if(at>limit-4){bad=true;return 0;}int value=BitConverter.ToInt32(b,at);at+=4;return value;}
-  void Assign(int reg,string value){if(reg==4||reg==6){bad=true;return;}registers[reg]=value;}
+  void Assign(int reg,string value){if(reg==4||reg==packetRegister){bad=true;return;}registers[reg]=value;}
   bool Memory(int mod,int rm,int rex,out int address,out bool stack){
    address=0;stack=false;if(mod==3)return false;
    int basis=rm+((rex&1)!=0?8:0);
-   if(rm==4){int sib=Byte();if(sib!=0x24||(rex&3)!=0)return false;basis=4;}
+   if(rm==4){int sib=Byte();if(sib!=0x24||(rex&2)!=0)return false;basis=4+((rex&1)!=0?8:0);}
    if(mod==0&&rm==5)return false;
    if(mod==1)address=(sbyte)Byte();else if(mod==2)address=Int();
-   if(basis!=4&&basis!=6)return false;stack=basis==4;return !bad;
+   if(basis!=4&&basis!=packetRegister)return false;stack=basis==4;return !bad;
   }
   void Store(int offset,int width,string value){
    if(offset<0||offset>18-width){bad=true;return;}

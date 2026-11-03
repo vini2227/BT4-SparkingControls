@@ -1,1 +1,1 @@
-PASS: 154 BT4 boundary checks: current/previous build, equivalent axis reorder and register allocation accepted; changed packet/register/argument/online contracts rejected. Initial boundary + full validation ms=247. No gameplay executed.
+PASS: 227 BT4 boundary checks: current/previous build and preserved-register argument allocation accepted; changed packet/auxiliary/register/argument/online contracts rejected. Initial boundary + full validation ms=244. No gameplay executed.

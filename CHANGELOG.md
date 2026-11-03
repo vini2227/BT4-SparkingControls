@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.9.7
+- Socket and output-pointer arguments can use distinct preserved Win64
+  registers. The output buffer is no longer assumed to reside in RSI.
+- The bounded packet decoder follows the verified output register. Stack,
+  volatile-register and overlapping argument bindings remain rejected.
+- Complete reviewed native input variants remain checked; the newer producer
+  additionally pins the native Pad_Update consumer to verify packet layout.
+- Previous producer variants and all64 earlier signatures remain available.
+  Address moves resolve symbolically; unsupported structural/protocol changes
+  can still need review. Analysis is startup-only; native controls unchanged.
+
+## 0.9.6
+- Three native capture-field addresses now follow their exact symbolic match
+  fields instead of being treated as fixed instruction literals. Code changes
+  and redirected symbols are still rejected; harmless address moves can pass.
+- The input ABI checker accepts the socket argument in a saved Win64 register,
+  while preserving the output-pointer binding, full save/restore contract,
+  18-byte packet proof and native online caller checks. Stack/output/volatile
+  argument bindings remain rejected. No EXE hash added to the runtime allowlist.
+- Startup-only compatibility changes; native controls payload unchanged.
+- Complete instruction/reference checks cover the newer native target-stick
+  packet trailer, including its auxiliary byte. The filter preserves auxiliary
+  bytes instead of assuming that the packet tail is unused or always zero.
+
 ## 0.9.5
 - The replacement technique glyph uses the reviewed newer renderer's centered
   4:3 transform when the game's HUD is Centered. This follows the native

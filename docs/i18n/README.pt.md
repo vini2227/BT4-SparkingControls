@@ -2,13 +2,15 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9.5 Test
+# BT4 Sparking Controls — 0.9.7 Test
+
+Novidades da 0.9.7: compatibilidade com os coletores nativos revisados mais recentes; endereços resolvidos pelos símbolos; reconhecimento independente dos registradores dos dois argumentos; preservação dos campos auxiliares de alvo. A checagem ocorre somente na abertura. Alterações reais de estrutura ou protocolo ainda podem exigir revisão.
 
 Novidades da 0.9.5: recuperação no chão com botões e direções nativos; R1 e ↑/↓ para solicitar recuperação aérea nas situações compatíveis; reconhecimento das novas funções revisadas do jogo; último EXE/CMD salvo automaticamente, mesmo se a validação falhar; quadrado/círculo acompanhando a escala e a posição do triângulo no HUD Centralizado da versão nova. As regras, tempos e custos continuam sendo os do BT4. A versão anterior permanece aceita. Inclui as correções da 0.9.1 à 0.9.5. Os testes automatizados não substituem a confirmação em partida online real.
 
-Extraia o ZIP Windows e execute BT4-SparkingControls.exe. Em Procurar, selecione BT4decomp.exe ou um arquivo .cmd na mesma pasta do jogo; depois clique em Salvar e iniciar. A versão 0.9.5 Test inclui as correções de fonte, CMD, disputa de energia e retratos. As configurações são preservadas. Este pacote é somente para Windows.
+Extraia o ZIP Windows e execute BT4-SparkingControls.exe. Em Procurar, selecione BT4decomp.exe ou um arquivo .cmd na mesma pasta do jogo; depois clique em Salvar e iniciar. A versão 0.9.7 Test inclui as correções de fonte, CMD, disputa de energia e retratos. As configurações são preservadas. Este pacote é somente para Windows.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.5-test/BT4-SparkingControls-0.9.5-Test-Windows.zip) · [0.9.5 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.7-test/BT4-SparkingControls-0.9.7-Test-Windows.zip) · [0.9.7 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## Controles
 
