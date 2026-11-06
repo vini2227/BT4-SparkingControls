@@ -2,15 +2,17 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9.7 Test
+# BT4 Sparking Controls — 0.9.8 Test
+
+0.9.8 更新：唯一資料符號更換編譯器分組時，減少誤報不相容。支援已審核的新本機輸入路徑及原生輔助編碼器，繼續驗證程式碼、目標位址和歧義名稱。保留控制、HUD 和設定，僅在啟動時檢查。真正的協定變更仍可能需要重新審核。
 
 0.9.7 更新：支援已審核的新原生輸入實作，依符號解析位址，分別辨識兩個參數的暫存器，並保留輔助目標選擇欄位。檢查僅在啟動時執行。真正的結構或協定變更仍可能需要重新審核。
 
 0.9.5 更新：倒地時恢復原生按鍵及方向操作；在支援的空中受擊狀態下，R1 和 ↑/↓ 請求恢復；驗證新版遊戲介面；即使相容性驗證失敗，也會自動記住最後選擇的 EXE/CMD；在新版置中 HUD 中，方塊/圓圈跟隨三角形的位置及縮放。規則、時機及消耗仍由 BT4 決定，並保留舊版支援。包含 0.9.1–0.9.5 修正；自動測試不能取代實際線上對戰。
 
-解壓縮 Windows ZIP，執行 BT4-SparkingControls.exe。選擇 BT4decomp.exe 或同一資料夾中的 .cmd，然後儲存並啟動。0.9.7 Test 包含字型、CMD 啟動、對波輸入與頭像修正。設定會保留。僅提供 Windows 版本。
+解壓縮 Windows ZIP，執行 BT4-SparkingControls.exe。選擇 BT4decomp.exe 或同一資料夾中的 .cmd，然後儲存並啟動。0.9.8 Test 包含字型、CMD 啟動、對波輸入與頭像修正。設定會保留。僅提供 Windows 版本。
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.7-test/BT4-SparkingControls-0.9.7-Test-Windows.zip) · [0.9.7 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.8-test/BT4-SparkingControls-0.9.8-Test-Windows.zip) · [0.9.8 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## 操作
 

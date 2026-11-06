@@ -2,15 +2,17 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9.7 Test
+# BT4 Sparking Controls — 0.9.8 Test
+
+0.9.8 변경: 고유 데이터 심벌의 컴파일러 그룹 변경에 따른 잘못된 호환성 차단을 줄였습니다. 검토된 새 로컬 입력 경로와 기본 보조 인코더를 지원합니다. 코드, 참조 대상과 모호한 이름은 계속 검증합니다. 조작, HUD와 설정을 유지하며 검사는 시작 시에만 수행합니다. 실제 프로토콜 변경은 추가 검토가 필요할 수 있습니다.
 
 0.9.7 변경: 검토된 새 기본 입력 구현 지원, 심벌 기반 주소 확인, 두 인수의 레지스터를 개별 인식하고 대상 선택 보조 필드 유지. 검사는 시작 시에만 수행합니다. 실제 구조나 프로토콜 변경은 추가 검토가 필요할 수 있습니다.
 
 0.9.5 변경: 지상 회복에 기본 버튼과 방향 입력을 다시 사용할 수 있습니다. 지원되는 공중 피격 상태에서는 R1과 ↑/↓로 회복을 요청합니다. 새 게임 인터페이스를 검증하며, 호환성 검사 실패 시에도 마지막 EXE/CMD를 자동 저장합니다. 새 중앙 HUD에서 네모/동그라미가 세모의 위치와 크기를 따릅니다. 규칙, 시간, 비용은 BT4가 결정하며 이전 버전도 지원합니다. 0.9.1–0.9.5 수정 포함. 자동 테스트는 실제 온라인 대전 확인을 대신하지 않습니다.
 
-Windows ZIP을 풀고 BT4-SparkingControls.exe를 실행하세요. BT4decomp.exe 또는 같은 폴더의 .cmd를 선택한 후 저장하고 시작하세요. 0.9.7 Test에는 글꼴, CMD 실행, 에너지 충돌 입력, 초상화 수정이 포함됩니다. 설정은 유지됩니다. Windows 전용입니다.
+Windows ZIP을 풀고 BT4-SparkingControls.exe를 실행하세요. BT4decomp.exe 또는 같은 폴더의 .cmd를 선택한 후 저장하고 시작하세요. 0.9.8 Test에는 글꼴, CMD 실행, 에너지 충돌 입력, 초상화 수정이 포함됩니다. 설정은 유지됩니다. Windows 전용입니다.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.7-test/BT4-SparkingControls-0.9.7-Test-Windows.zip) · [0.9.7 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.8-test/BT4-SparkingControls-0.9.8-Test-Windows.zip) · [0.9.8 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## 조작
 

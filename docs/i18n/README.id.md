@@ -2,15 +2,17 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9.7 Test
+# BT4 Sparking Controls — 0.9.8 Test
+
+Baru di 0.9.8: mengurangi penolakan keliru saat simbol data unik berpindah kelompok kompilasi. Mendukung jalur input lokal dan pengode tambahan asli baru yang telah diperiksa. Kode, tujuan dan nama ambigu tetap diperiksa. Kontrol, HUD dan pengaturan tetap; analisis hanya saat mulai. Perubahan protokol nyata masih dapat memerlukan peninjauan.
 
 Baru di 0.9.7: varian input asli baru yang telah diperiksa, alamat mengikuti simbol, pengenalan register kedua argumen secara terpisah, dan kolom tambahan penargetan tetap dipertahankan. Pemeriksaan hanya saat mulai. Perubahan struktur atau protokol nyata masih dapat memerlukan peninjauan.
 
 Baru di 0.9.5: pemulihan di tanah memakai tombol dan arah asli; R1 dan ↑/↓ meminta pemulihan udara pada reaksi yang didukung; antarmuka game baru diperiksa; EXE/CMD terakhir otomatis disimpan meski validasi gagal; kotak/lingkaran mengikuti posisi dan skala segitiga pada HUD terpusat versi baru. Aturan, waktu dan biaya tetap ditentukan BT4. Versi sebelumnya tetap didukung. Mencakup perbaikan 0.9.1–0.9.5; pengujian otomatis tidak menggantikan pertandingan daring nyata.
 
-Ekstrak ZIP Windows dan jalankan BT4-SparkingControls.exe. Pilih BT4decomp.exe atau berkas .cmd dalam folder yang sama, lalu simpan dan mulai. Versi 0.9.7 Test mencakup perbaikan font, peluncuran CMD, benturan energi, dan potret. Pengaturan tetap tersimpan. Khusus Windows.
+Ekstrak ZIP Windows dan jalankan BT4-SparkingControls.exe. Pilih BT4decomp.exe atau berkas .cmd dalam folder yang sama, lalu simpan dan mulai. Versi 0.9.8 Test mencakup perbaikan font, peluncuran CMD, benturan energi, dan potret. Pengaturan tetap tersimpan. Khusus Windows.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.7-test/BT4-SparkingControls-0.9.7-Test-Windows.zip) · [0.9.7 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.8-test/BT4-SparkingControls-0.9.8-Test-Windows.zip) · [0.9.8 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## Kontrol
 

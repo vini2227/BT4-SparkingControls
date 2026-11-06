@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.8 — Changes since 0.9.7
+
+- **Fewer false incompatibility errors after game updates:** unique data symbols can move between COFF compiler emission groups without losing recognition. The exact symbolic address is still checked; ambiguous duplicate names and executable symbols keep strict scope validation.
+- **Updated local sampling path:** supports the reviewed native sampler and its developer-rule auxiliary encoder. Complete instructions, references and encoder dependencies remain checked; the previous sampler is retained.
+- **Controls and HUD retained:** the native 18-byte packet and its auxiliary fields are preserved. No control-payload changes, extra combat polling, logging or hooks.
+- **Startup-only analysis:** initial ABI plus validation measured about 0.235 seconds in this environment. Saved preferences and the last EXE/CMD remain unchanged.
+
+Real structural or protocol changes outside the checked interfaces can still require review. Future game builds are not universally guaranteed.
+
 ## 0.9.7
 - Socket and output-pointer arguments can use distinct preserved Win64
   registers. The output buffer is no longer assumed to reside in RSI.

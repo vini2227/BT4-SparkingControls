@@ -1,20 +1,19 @@
 BT4 Sparking Controls
 
-0.9.7 Test — Windows Controls and Setup Guide
+0.9.8 Test — Windows Controls and Setup Guide
 
 Sparking! ZERO-inspired controls and battle HUD for BT4 Decomp. This is the separate BT4 edition of BT3 Sparking Controls (https://github.com/vini2227/BT3-SparkingControls). Native animations, damage, Ki costs, range, partner requirements and timing still apply. The game and game artwork are not included.
 
-Download Windows x64 ZIP (https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.7-test/BT4-SparkingControls-0.9.7-Test-Windows.zip) · Release notes (https://github.com/vini2227/BT4-SparkingControls/releases/tag/v0.9.7-test) · English TXT (docs/Controls-and-Setup-Guide.txt) · Changes (CHANGELOG.md)
+Download Windows x64 ZIP (https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.8-test/BT4-SparkingControls-0.9.8-Test-Windows.zip) · Release notes (https://github.com/vini2227/BT4-SparkingControls/releases/tag/v0.9.8-test) · English TXT (docs/Controls-and-Setup-Guide.txt) · Changes (CHANGELOG.md)
 
-0.9.7 — Changes since 0.9.5
+0.9.8 — Changes since 0.9.7
 
-- Native address changes (0.9.6): capture fields follow their exact symbolic targets instead of fixed addresses embedded in instructions. Harmless relocations can pass while redirected targets and changed code remain rejected.
-- Input argument registers (0.9.6–0.9.7): the socket and output buffer may use different preserved Windows x64 registers. The packet decoder follows the verified buffer register, including extended-register addressing. Stack, volatile and overlapping bindings remain rejected.
-- Updated native input variants: complete instruction, table and reference checks cover the newer target-stick auxiliary protocol. The latest reviewed producer also verifies the native packet consumer. The helper preserves the auxiliary bytes, including native target signaling. Earlier reviewed versions and all 64 original interface signatures remain available.
-- Fast startup-only checks: measured about 0.24 seconds for the initial ABI plus validation in this environment. The native controls payload is unchanged; these updates add no combat polling, diagnostics or hooks.
-- Includes earlier recovery, automatic last-EXE/CMD saving, centered prompt alignment, translated red launcher, portraits, shortcuts and split-screen/ultrawide improvements. Complete version history (CHANGELOG.md).
+- Fewer false incompatibility errors after game updates: unique data symbols can move between COFF compiler emission groups without losing recognition. The exact symbolic address is still checked; ambiguous duplicate names and executable symbols keep strict scope validation.
+- Updated local sampling path: supports the reviewed native sampler and its developer-rule auxiliary encoder. Complete instructions, references and encoder dependencies remain checked; the previous sampler is retained.
+- Controls and HUD retained: the native 18-byte packet and its auxiliary fields are preserved. No control-payload changes, extra combat polling, logging or hooks.
+- Startup-only analysis: initial ABI plus validation measured about 0.235 seconds in this environment. Saved preferences and the last EXE/CMD remain unchanged.
 
-This release reduces false incompatibility reports caused by compatible address/register changes. Real structural or protocol changes can still require review; future game builds are not universally guaranteed.
+Real structural or protocol changes outside the checked interfaces can still require review. Future game builds are not universally guaranteed.
 
 Windows x64 test release. There is no validated native Linux BT4 package.
 
@@ -129,7 +128,7 @@ The helper translates the local controller packet before network sampling. The p
 
 Startup and relaunch checks validate the reviewed native interfaces and typed references. Compatible address-only changes and supported input-collector implementation changes can be accepted automatically. The bounded input contract checks the packet rather than pinning the whole collector body. Missing symbols or structural changes outside the supported contracts may still need a helper update. Universal future-version compatibility and desync-free operation are not guaranteed. BT3 Char Package/Tag Team support is not a claim of support for arbitrary BT4 forks.
 
-Validated: 1,764,747 emulated packet/ABI/native-command checks on the currently reviewed game, preserving nonzero auxiliary bytes; 571 interface/variant checks; 227 ABI checks including preserved-register combinations and invalid packet/argument/caller rejection; 48 independent machine-code writer cases across eight output registers; 51 projection and 21 last-path checks; shared settings, relocation and suspended-hook readback. The initial ABI plus validation measured about 0.24 seconds. Earlier font, portrait, layout and CMD reports remain included. Automated checks do not replace physical-controller, sustained-FPS or live online/rollback testing. The corrected prompt alignment still awaits live-match confirmation.
+Validated on the updated game: 1,764,747 emulated packet/ABI/native-command checks at three allocation addresses; 441 new update-boundary checks covering emission-group changes, duplicate symbols and every unmasked sampler/encoder byte; 571 interface/variant checks; 227 ABI checks; 48 writer cases; 51 projection and 21 last-path checks; shared settings, section relocation and suspended-hook readback. The initial ABI plus validation measured about 0.235 seconds. Automated checks do not replace physical-controller, sustained-FPS or live online/rollback testing. Corrected prompt alignment still awaits live-match confirmation.
 
 Credits, source and license
 

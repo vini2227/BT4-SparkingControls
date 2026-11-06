@@ -1,0 +1,1 @@
+PASS: 441 update-boundary checks: unique data groups may move; duplicate data, executable scopes, sampler/auxiliary code and redirected references remain checked. No gameplay executed.

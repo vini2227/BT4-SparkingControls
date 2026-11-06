@@ -2,15 +2,17 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9.7 Test
+# BT4 Sparking Controls — 0.9.8 Test
+
+0.9.8 の変更：一意のデータシンボルのコンパイラグループ変更による誤った非対応判定を減らしました。検証済みの新しいローカル入力経路とネイティブ補助エンコーダに対応します。コード、参照先、曖昧な名前は引き続き検証します。操作、HUD、設定は保持し、確認は起動時のみです。実際のプロトコル変更は再確認が必要な場合があります。
 
 0.9.7 の変更：検証済みの新しい入力実装に対応し、アドレスをシンボルで解決します。2つの引数のレジスタを個別に認識し、ターゲット選択用の補助フィールドを保持します。確認は起動時のみです。実際の構造・プロトコル変更は引き続き確認が必要な場合があります。
 
 0.9.5 の変更：地上復帰で元のボタンと方向入力を使用できます。対応する空中の被弾状態では R1 と ↑/↓ で復帰を要求します。新しいゲーム関数を検証し、互換性確認に失敗しても最後の EXE/CMD を自動保存します。新しい中央 HUD では四角／丸が三角の位置と倍率に追従します。規則、時間、消費は BT4 のままで、旧版にも対応します。0.9.1～0.9.5 の修正を含みます。自動テストは実際のオンライン対戦の確認に代わるものではありません。
 
-Windows ZIP を展開し、BT4-SparkingControls.exe を起動します。BT4decomp.exe または同じフォルダーの .cmd を選択し、保存して起動してください。0.9.7 Test にはフォント、CMD 起動、撃ち合い入力、ポートレートの修正が含まれます。設定は保持されます。Windows 専用です。
+Windows ZIP を展開し、BT4-SparkingControls.exe を起動します。BT4decomp.exe または同じフォルダーの .cmd を選択し、保存して起動してください。0.9.8 Test にはフォント、CMD 起動、撃ち合い入力、ポートレートの修正が含まれます。設定は保持されます。Windows 専用です。
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.7-test/BT4-SparkingControls-0.9.7-Test-Windows.zip) · [0.9.7 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.8-test/BT4-SparkingControls-0.9.8-Test-Windows.zip) · [0.9.8 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## 操作
 

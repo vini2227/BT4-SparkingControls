@@ -88,7 +88,13 @@ sealed class PeImage {
             var local=candidates.Where(x=>x.Key.StartsWith(prefix,StringComparison.Ordinal)&&int.TryParse(x.Key.Substring(prefix.Length),out ordinal)).SelectMany(x=>x.Value).Where(x=>x.Type!=32&&x.Scope==scope).ToArray();
             return local.Select(x=>x.Rva).Distinct().Count()==1&&local.Any(x=>x.Rva==rva);
         }
-        if(scope!=null)return matches.Any(s=>s.Rva==rva&&s.Scope==scope);
+        if(scope!=null){
+            if(matches.Any(s=>s.Rva==rva&&s.Scope==scope))return true;
+            // COFF emission groups are not C lexical scopes: adding a function
+            // can move a unique static's group without changing its identity.
+            // Only unambiguous non-executable data may use this fallback.
+            return matches.Select(s=>s.Rva).Distinct().Count()==1&&matches.All(s=>s.Type!=32&&(Sections[s.Section-1].Flags&0x20000000)==0)&&matches.Any(s=>s.Rva==rva);
+        }
         if(name.StartsWith(".",StringComparison.Ordinal))return Symbol(name)==rva;
         // Local COFF names may repeat across translation units. Resolve them in
         // the referencing function's COFF emission group, never against an unrelated duplicate.
@@ -306,8 +312,9 @@ static class OnlineCompatibilityTests {
             // relocate its actual references too. Older bounded collectors do
             // not need a complete matching instruction signature here.
             try{var originalPacket=metadata.functions.First(f=>f.name=="Port_PadRead");var selectedPacket=OnlineCompatibility.ReviewedSignature(image,originalPacket);if(selectedPacket!=originalPacket)selectedFunctions=selectedFunctions.Concat(new[]{selectedPacket}).ToArray();}catch(IOException){}
+            if(metadata.packet_contract!=null)selectedFunctions=selectedFunctions.Concat(new[]{OnlineCompatibility.ReviewedSignature(image,metadata.packet_contract.caller)}).ToArray();
             var selectedWithDependencies=selectedFunctions.Concat(selectedFunctions.SelectMany(f=>f.dependencies??new OnlineSignature[0])).ToArray();
-            foreach(var f in selectedWithDependencies.Concat(metadata.packet_contract==null?new OnlineSignature[0]:new[]{metadata.packet_contract.caller}))foreach(var reference in f.references)if(reference.kind=="absolute"){
+            foreach(var f in selectedWithDependencies)foreach(var reference in f.references)if(reference.kind=="absolute"){
                 int off=image.RawOffset(image.Symbol(f.name)+reference.offset,reference.width);
                 if(reference.width==4)Buffer.BlockCopy(BitConverter.GetBytes(checked(BitConverter.ToInt32(moved,off)+delta)),0,moved,off,4);
                 else Buffer.BlockCopy(BitConverter.GetBytes(BitConverter.ToInt64(moved,off)+delta),0,moved,off,8);
@@ -391,7 +398,7 @@ static class Bt4PacketBoundary {
   Require(code.Take(entry.Length).SequenceEqual(entry),"Win64 register/stack save");
   Require(FindBinding(code,entry.Length,128)>=0,"socket/output arguments");
   int exit=Find(code,epilogue,entry.Length,256);Require(exit>=0,"Win64 register/stack restore");
-  OnlineCompatibility.CheckSignature(image,c.caller);
+  OnlineCompatibility.ReviewedSignature(image,c.caller);
   return exit;
  }
  internal static int FindBinding(byte[] code,int begin,int limit){

@@ -2,15 +2,17 @@
 
 ---
 
-# BT4 Sparking Controls — 0.9.7 Test
+# BT4 Sparking Controls — 0.9.8 Test
+
+Novità 0.9.8: meno falsi blocchi quando simboli dati univoci cambiano gruppo di compilazione. Supporto al nuovo percorso locale e al codificatore ausiliario nativo verificati. Codice, destinazioni e nomi ambigui restano controllati. Comandi, HUD e impostazioni preservati; verifica solo all’avvio. Modifiche reali del protocollo possono ancora richiedere una revisione.
 
 Novità 0.9.7: nuove varianti native verificate, indirizzi risolti tramite simboli, riconoscimento separato dei registri dei due argomenti e campi ausiliari di selezione bersaglio preservati. Verifica solo all’avvio. Cambiamenti reali di struttura o protocollo possono ancora richiedere una revisione.
 
 Novità 0.9.5: recupero a terra con pulsanti e direzioni nativi; R1 e ↑/↓ richiedono il recupero aereo nelle reazioni supportate; nuove interfacce del gioco verificate; ultimo EXE/CMD salvato automaticamente anche se la verifica fallisce; quadrato/cerchio segue posizione e scala del triangolo nel nuovo HUD centrato. Regole, tempi e costi restano quelli di BT4. La versione precedente resta supportata. Include le correzioni 0.9.1–0.9.5; i test automatici non sostituiscono una partita online reale.
 
-Estrai lo ZIP Windows e avvia BT4-SparkingControls.exe. Seleziona BT4decomp.exe oppure un file .cmd nella stessa cartella, poi salva e avvia. La versione 0.9.7 Test include correzioni per font, avvio CMD, scontri e ritratti. Le impostazioni vengono conservate. Solo Windows.
+Estrai lo ZIP Windows e avvia BT4-SparkingControls.exe. Seleziona BT4decomp.exe oppure un file .cmd nella stessa cartella, poi salva e avvia. La versione 0.9.8 Test include correzioni per font, avvio CMD, scontri e ritratti. Le impostazioni vengono conservate. Solo Windows.
 
-[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.7-test/BT4-SparkingControls-0.9.7-Test-Windows.zip) · [0.9.7 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
+[Windows ZIP](https://github.com/vini2227/BT4-SparkingControls/releases/download/v0.9.8-test/BT4-SparkingControls-0.9.8-Test-Windows.zip) · [0.9.8 Changes / English](../../CHANGELOG.md) · [Full English guide](../../README.md)
 
 ## Comandi
 

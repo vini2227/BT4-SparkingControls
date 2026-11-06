@@ -21,3 +21,5 @@ Current 0.9.5 payload: 29 exact compiled external references, covering the same 
 
 
 0.9.7 retains the 29-reference payload. Socket and buffer registers are independently decoded. Strict producer variants and the newer Pad_Update consumer are pinned; no unchecked collector fallback is used. Keep symbolic Capture fields, typed tables, previous variants and the renderer capability when regenerating metadata. WriterRegisterFixture covers extended output bases.
+
+0.9.8: unique non-executable data may move COFF emission groups; duplicated data and executable symbols keep strict scopes. The packet caller supports reviewed alternatives with complete native encoder dependencies. Keep prior caller versions and selected-caller relocation coverage. UpdateBoundaryFixture tests this contract. No native payload rebuild is required.
